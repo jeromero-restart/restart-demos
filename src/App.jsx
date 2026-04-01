@@ -156,7 +156,7 @@ export default function App() {
                 [ ESPACIO INTERACTIVO ]
               </h2>
               <p className="font-sans text-sm md:text-base text-[#EDEFFE]/60 text-center max-w-md relative z-10">
-                Aquí se incrustará la interfaz funcional de la demo (iframe, chat, o componente interactivo de React).
+                Aquí se incrustará la interfaz funcional de la demo (iframe, chat,componente interactivo o redirección a otra pagina en caso de ser necesario).
               </p>
 
               {/* Botón simulación inicio */}
