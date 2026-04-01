@@ -108,113 +108,116 @@ export default function App() {
       <div className="min-h-screen bg-[#0000FF] font-sans text-[#EDEFFE] selection:bg-[#EDEFFE] selection:text-[#0000FF]">
         <style>{fontStyles}</style>
 
-        {/* TOPBAR SIMPLIFICADA */}
-        <header className="bg-[#0000FF] border-b-2 border-[#EDEFFE] sticky top-0 z-50 p-4 flex justify-between items-center">
+        {/* TOPBAR SIMPLIFICADA (Optimizada para Móvil) */}
+        <header className="bg-[#0000FF] border-b-2 border-[#EDEFFE] sticky top-0 z-50 p-3 md:p-4 flex justify-between items-center gap-2">
           <button 
             onClick={() => setActiveDemo(null)}
-            className="flex items-center gap-2 font-sans font-bold uppercase text-sm bg-[#EDEFFE] text-[#0000FF] px-4 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] hover:border-[#EDEFFE] border-2 border-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F]"
+            className="flex items-center gap-1 md:gap-2 font-sans font-bold uppercase text-xs md:text-sm bg-[#EDEFFE] text-[#0000FF] px-3 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] hover:border-[#EDEFFE] border-2 border-[#EDEFFE] transition-colors shadow-[2px_2px_0_#1F1F1F] md:shadow-[4px_4px_0_#1F1F1F] flex-shrink-0"
           >
-            <ArrowLeft className="h-4 w-4" /> Volver al Hub
+            <ArrowLeft className="h-4 w-4" /> 
+            <span className="hidden sm:inline">Volver al Hub</span>
+            <span className="sm:hidden">Volver</span>
           </button>
           
-          <div className="flex items-center gap-4">
-             <span className="font-display text-3xl text-[#EDEFFE] uppercase">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0">
+             <span className="font-display text-lg sm:text-2xl md:text-3xl text-[#EDEFFE] uppercase truncate">
                 ///__ENTORNO_ACTIVO
              </span>
-             {/* Logo en vista demo (opcional, para mantener consistencia) */}
-             <img src="/logo.png" alt="RESTART Logo" className="h-8 w-auto opacity-50" />
+             {/* Logo en vista demo (oculto en móvil para ahorrar espacio) */}
+             <img src="/logo.png" alt="RESTART Logo" className="h-6 md:h-8 w-auto opacity-50 hidden sm:block" />
           </div>
         </header>
 
-        <main className="max-w-[1600px] mx-auto p-4 md:p-8 flex flex-col xl:flex-row gap-8 h-[calc(100vh-80px)]">
+        {/* Se usa min-h en móvil para permitir scroll, y h- fijo solo en escritorio (xl) */}
+        <main className="max-w-[1600px] mx-auto p-4 md:p-8 flex flex-col xl:flex-row gap-6 md:gap-8 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)] overflow-x-hidden">
           
           {/* ÁREA PRINCIPAL DE LA DEMO (VIEWPORT) */}
-          <section className="flex-[3] flex flex-col border-2 border-[#EDEFFE] bg-[#1F1F1F] shadow-[12px_12px_0_#EDEFFE]">
+          <section className="flex-[3] flex flex-col border-2 border-[#EDEFFE] bg-[#1F1F1F] shadow-[6px_6px_0_#EDEFFE] md:shadow-[12px_12px_0_#EDEFFE] min-h-[50vh] xl:min-h-0">
             {/* Cabecera del Viewport */}
-            <div className="border-b-2 border-[#EDEFFE] bg-[#0000FF] p-3 flex justify-between items-center">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 bg-[#EDEFFE] rounded-full animate-pulse"></div>
-                <span className="font-display text-xl text-[#EDEFFE] tracking-widest">{activeDemo.title}.exe</span>
+            <div className="border-b-2 border-[#EDEFFE] bg-[#0000FF] p-2 md:p-3 flex justify-between items-center">
+              <div className="flex gap-2 items-center">
+                <div className="w-2 h-2 md:w-3 md:h-3 bg-[#EDEFFE] rounded-full animate-pulse flex-shrink-0"></div>
+                <span className="font-display text-lg md:text-xl text-[#EDEFFE] tracking-widest truncate">{activeDemo.title}.exe</span>
               </div>
-              <span className="font-sans text-xs font-bold uppercase text-[#EDEFFE]">
+              <span className="font-sans text-[10px] md:text-xs font-bold uppercase text-[#EDEFFE] flex-shrink-0 ml-2">
                 ID: {activeDemo.ascii}
               </span>
             </div>
             
             {/* Contenido interactivo (Placeholder) */}
-            <div className="flex-1 relative overflow-hidden flex flex-col justify-center items-center p-8 bg-[#1F1F1F]">
+            <div className="flex-1 relative overflow-hidden flex flex-col justify-center items-center p-4 md:p-8 bg-[#1F1F1F]">
               {/* Textura ASCII de fondo para el viewport */}
-              <div className="absolute inset-0 opacity-10 font-display text-sm leading-tight break-all select-none text-[#EDEFFE] pointer-events-none overflow-hidden">
+              <div className="absolute inset-0 opacity-10 font-display text-xs md:text-sm leading-tight break-all select-none text-[#EDEFFE] pointer-events-none overflow-hidden">
                 {("1010101011110001010101010101010111010100001010101010101010101010101010101010101 ").repeat(200)}
               </div>
               
-              <Terminal className="w-24 h-24 text-[#0000FF] mb-6 relative z-10" />
-              <h2 className="font-display text-5xl text-[#EDEFFE] uppercase text-center relative z-10 mb-4">
+              <Terminal className="w-16 h-16 md:w-24 md:h-24 text-[#0000FF] mb-4 md:mb-6 relative z-10" />
+              <h2 className="font-display text-3xl md:text-5xl text-[#EDEFFE] uppercase text-center relative z-10 mb-2 md:mb-4">
                 [ ESPACIO INTERACTIVO ]
               </h2>
-              <p className="font-sans text-[#EDEFFE]/60 text-center max-w-md relative z-10">
+              <p className="font-sans text-sm md:text-base text-[#EDEFFE]/60 text-center max-w-md relative z-10">
                 Aquí se incrustará la interfaz funcional de la demo (iframe, chat, o componente interactivo de React).
               </p>
 
               {/* Botón simulación inicio */}
-              <button className="mt-8 relative z-10 bg-[#0000FF] text-[#EDEFFE] border-2 border-[#EDEFFE] px-8 py-3 font-display text-2xl uppercase hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors shadow-[6px_6px_0_#EDEFFE]">
-                &gt; Iniciar Demo
+              <button className="mt-6 md:mt-8 relative z-10 bg-[#0000FF] text-[#EDEFFE] border-2 border-[#EDEFFE] px-6 md:px-8 py-2 md:py-3 font-display text-xl md:text-2xl uppercase hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors shadow-[4px_4px_0_#EDEFFE] md:shadow-[6px_6px_0_#EDEFFE]">
+                &gt; Iniciar Proceso
               </button>
             </div>
           </section>
 
           {/* PANEL LATERAL DE IMPACTO / INFO */}
-          <aside className="flex-1 flex flex-col gap-6 overflow-y-auto">
+          <aside className="flex-1 flex flex-col gap-6 xl:overflow-y-auto pb-8 xl:pb-0">
             
             {/* Bloque Info Principal */}
-            <div className="bg-[#EDEFFE] border-2 border-[#1F1F1F] p-6 shadow-[8px_8px_0_#1F1F1F]">
-              <h1 className="font-display text-5xl text-[#0000FF] uppercase leading-[0.8] mb-4">
+            <div className="bg-[#EDEFFE] border-2 border-[#1F1F1F] p-4 md:p-6 shadow-[6px_6px_0_#1F1F1F] md:shadow-[8px_8px_0_#1F1F1F]">
+              <h1 className="font-display text-4xl md:text-5xl text-[#0000FF] uppercase leading-[0.8] mb-4">
                 {activeDemo.title}
               </h1>
-              <div className="flex gap-2 mb-6">
-                 <span className="bg-[#1F1F1F] text-[#EDEFFE] text-xs font-bold px-2 py-1 uppercase border-2 border-[#1F1F1F]">
+              <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
+                 <span className="bg-[#1F1F1F] text-[#EDEFFE] text-[10px] md:text-xs font-bold px-2 py-1 uppercase border-2 border-[#1F1F1F]">
                     {activeDemo.vertical}
                   </span>
-                  <span className="bg-[#0000FF] text-[#EDEFFE] text-xs font-display px-2 py-1 tracking-widest uppercase border-2 border-[#0000FF]">
+                  <span className="bg-[#0000FF] text-[#EDEFFE] text-[10px] md:text-xs font-display px-2 py-1 tracking-widest uppercase border-2 border-[#0000FF]">
                     {activeDemo.tech}
                   </span>
               </div>
-              <p className="font-sans text-sm font-medium text-[#1F1F1F] leading-relaxed mb-6">
+              <p className="font-sans text-xs md:text-sm font-medium text-[#1F1F1F] leading-relaxed mb-4 md:mb-6">
                 {activeDemo.description}
               </p>
 
-              <div className="bg-[#0000FF] p-4 border-2 border-[#1F1F1F]">
-                <h4 className="flex items-center gap-2 text-xs font-bold text-[#EDEFFE] uppercase tracking-widest mb-2">
+              <div className="bg-[#0000FF] p-3 md:p-4 border-2 border-[#1F1F1F]">
+                <h4 className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-[#EDEFFE] uppercase tracking-widest mb-1 md:mb-2">
                   {'>'} OBJETIVO PRINCIPAL
                 </h4>
-                <p className="font-sans text-sm font-bold text-[#EDEFFE]">
+                <p className="font-sans text-xs md:text-sm font-bold text-[#EDEFFE]">
                   {activeDemo.objective}
                 </p>
               </div>
             </div>
 
             {/* NUEVO Bloque: Impacto en Negocio */}
-            <div className="bg-[#1F1F1F] border-2 border-[#EDEFFE] p-6 shadow-[8px_8px_0_#EDEFFE] text-[#EDEFFE]">
-              <h3 className="font-display text-2xl uppercase border-b-2 border-[#EDEFFE] pb-2 mb-6">
+            <div className="bg-[#1F1F1F] border-2 border-[#EDEFFE] p-4 md:p-6 shadow-[6px_6px_0_#EDEFFE] md:shadow-[8px_8px_0_#EDEFFE] text-[#EDEFFE]">
+              <h3 className="font-display text-xl md:text-2xl uppercase border-b-2 border-[#EDEFFE] pb-2 mb-4 md:mb-6">
                 ///_IMPACTO_EN_NEGOCIO
               </h3>
               
-              <ul className="space-y-4 font-sans text-sm">
+              <ul className="space-y-3 md:space-y-4 font-sans text-sm">
                 {activeDemo.impactMetrics?.map((metric, idx) => {
                   const isUp = metric.startsWith('↑');
                   const isDown = metric.startsWith('↓');
                   const text = metric.substring(1).trim();
                   
                   return (
-                    <li key={idx} className="flex items-start gap-3 border-b border-[#EDEFFE]/20 pb-3 last:border-0 last:pb-0">
-                      <span className={`font-display text-lg px-2 py-0.5 border flex-shrink-0 leading-none ${
+                    <li key={idx} className="flex items-start gap-2 md:gap-3 border-b border-[#EDEFFE]/20 pb-2 md:pb-3 last:border-0 last:pb-0">
+                      <span className={`font-display text-base md:text-lg px-2 py-0.5 border flex-shrink-0 leading-none ${
                         isUp ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]' : 
                         isDown ? 'bg-[#0000FF] text-[#EDEFFE] border-[#0000FF]' : 
                         'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE]'
                       }`}>
                         {isUp ? '↑' : isDown ? '↓' : '>'}
                       </span>
-                      <span className="font-sans text-sm font-medium leading-relaxed pt-0.5">
+                      <span className="font-sans text-[11px] md:text-sm font-medium leading-relaxed pt-0.5">
                         {text}
                       </span>
                     </li>
