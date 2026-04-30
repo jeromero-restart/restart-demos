@@ -31,7 +31,11 @@ export default function LoginScreen({ initialError }) {
           setError(`Acceso restringido a cuentas @${ALLOWED_DOMAIN}`);
           return;
         }
-        login(profile);
+        const result = await login(profile);
+        if (result?.error === 'not_authorized')
+          setError('Tu cuenta no está autorizada. Contactá al administrador.');
+        else if (result?.error === 'api_error')
+          setError('Error al verificar permisos. Intentá de nuevo.');
       } finally {
         setLoading(false);
       }

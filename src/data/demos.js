@@ -1,6 +1,7 @@
 export const demosData = [
   {
     id: 1,
+    apiUrl: null,
     title: "PERFILADOR DE CLIENTE EN TIENDA (Vision AI)",
     vertical: "Retail",
     tech: "Vision AI",
@@ -16,6 +17,7 @@ export const demosData = [
   },
   {
     id: 2,
+    apiUrl: null,
     title: "AGENTES TELEFÓNICOS AUTÓNOMOS",
     vertical: "Todas",
     tech: "Voice AI",
@@ -31,6 +33,7 @@ export const demosData = [
   },
   {
     id: 3,
+    apiUrl: import.meta.env.VITE_MEDIHOME_API_URL || 'http://localhost:8000',
     title: "LECTURA INTELIGENTE DE PLANILLAS MÉDICAS",
     vertical: "Salud",
     tech: "OCR + IA",
@@ -46,6 +49,27 @@ export const demosData = [
   },
   {
     id: 4,
+    apiUrl: null,
+    botUrl: 'https://t.me/DPI_POC_bot',
+    knowledgeBase: [
+      {
+        doc: 'IT-ME-08 · Inertización con Nitrógeno Rev_01',
+        roles: ['Técnico', 'Supervisor'],
+        questions: [
+          '¿Cuál es el procedimiento de inertización con N₂ de líneas con gas de proceso?',
+          '¿Cuáles son las condiciones de presurización y tiempo para la inertización con N₂?',
+          '¿Cuáles son los riesgos derivados de la manipulación de N₂?',
+        ],
+      },
+      {
+        doc: 'PR-SSMA-03 · Entrega de EPP',
+        roles: [],
+        questions: [
+          '¿En dónde se hace la entrega de indumentaria y EPP?',
+          '¿Dónde se guardan las constancias de entrega de EPP?',
+        ],
+      },
+    ],
     title: "ASISTENTE INTELIGENTE CON CONOCIMIENTO EMPRESARIAL",
     vertical: "Todas",
     tech: "LLM + RAG",

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, FileText, Filter, Terminal, ArrowRight, ArrowLeft, Share2, LogOut } from 'lucide-react';
+import { Search, Play, FileText, Filter, Terminal, ArrowRight, ArrowLeft, Share2, LogOut, Users } from 'lucide-react';
 import { useAuth } from './auth/AuthContext';
 import SharePanel from './components/SharePanel';
+import MedihomeDemo from './components/demos/medihome/index';
+import TelegramLauncher from './components/demos/TelegramLauncher';
+import UsersPanel from './components/admin/UsersPanel';
 import { demosData, verticals } from './data/demos';
 
 const fontStyles = `
@@ -49,6 +52,7 @@ export default function App() {
   const [selectedVertical, setSelectedVertical] = useState("Todas");
   const [activeDemo, setActiveDemo] = useState(null);
   const [showShare, setShowShare] = useState(false);
+  const [showUsers, setShowUsers] = useState(false);
 
   const timeLeft = useCountdown(user?.type === 'guest' ? user.expiresAt : null);
 
@@ -115,21 +119,28 @@ export default function App() {
               </span>
             </div>
 
-            <div className="flex-1 relative overflow-hidden flex flex-col justify-center items-center p-4 md:p-8 bg-[#1F1F1F]">
-              <div className="absolute inset-0 opacity-10 font-display text-xs md:text-sm leading-tight break-all select-none text-[#EDEFFE] pointer-events-none overflow-hidden">
-                {("1010101011110001010101010101010111010100001010101010101010101010101010101010101 ").repeat(200)}
-              </div>
-
-              <Terminal className="w-16 h-16 md:w-24 md:h-24 text-[#0000FF] mb-4 md:mb-6 relative z-10" />
-              <h2 className="font-display text-3xl md:text-5xl text-[#EDEFFE] uppercase text-center relative z-10 mb-2 md:mb-4">
-                [ ESPACIO INTERACTIVO ]
-              </h2>
-              <p className="font-sans text-sm md:text-base text-[#EDEFFE]/60 text-center max-w-md relative z-10">
-                Aquí se incrustará la interfaz funcional de la demo (iframe, chat, componente interactivo o redirección a otra pagina en caso de ser necesario).
-              </p>
-              <button className="mt-6 md:mt-8 relative z-10 bg-[#0000FF] text-[#EDEFFE] border-2 border-[#EDEFFE] px-6 md:px-8 py-2 md:py-3 font-display text-xl md:text-2xl uppercase hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors shadow-[4px_4px_0_#EDEFFE] md:shadow-[6px_6px_0_#EDEFFE]">
-                &gt; Iniciar Proceso
-              </button>
+            <div className="flex-1 overflow-hidden bg-[#1F1F1F]">
+              {activeDemo.id === 3 ? (
+                <MedihomeDemo apiUrl={activeDemo.apiUrl} />
+              ) : activeDemo.botUrl ? (
+                <TelegramLauncher
+                  botUrl={activeDemo.botUrl}
+                  knowledgeBase={activeDemo.knowledgeBase}
+                />
+              ) : (
+                <div className="h-full relative flex flex-col justify-center items-center p-4 md:p-8">
+                  <div className="absolute inset-0 opacity-10 font-display text-xs md:text-sm leading-tight break-all select-none text-[#EDEFFE] pointer-events-none overflow-hidden">
+                    {("1010101011110001010101010101010111010100001010101010101010101010101010101010101 ").repeat(200)}
+                  </div>
+                  <Terminal className="w-16 h-16 md:w-24 md:h-24 text-[#0000FF] mb-4 md:mb-6 relative z-10" />
+                  <h2 className="font-display text-3xl md:text-5xl text-[#EDEFFE] uppercase text-center relative z-10 mb-2 md:mb-4">
+                    [ ESPACIO INTERACTIVO ]
+                  </h2>
+                  <p className="font-sans text-sm md:text-base text-[#EDEFFE]/60 text-center max-w-md relative z-10">
+                    Aquí se incrustará la interfaz funcional de la demo.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 
@@ -227,6 +238,15 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            {!isGuest && user?.role === 'admin' && (
+              <button
+                onClick={() => setShowUsers(true)}
+                className="flex items-center gap-2 font-sans font-bold uppercase text-xs bg-transparent text-[#EDEFFE] border-2 border-[#EDEFFE]/40 px-4 py-2 hover:border-[#EDEFFE] hover:bg-[#1F1F1F] transition-colors"
+              >
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Accesos</span>
+              </button>
+            )}
             {!isGuest && (
               <button
                 onClick={() => setShowShare(true)}
@@ -417,6 +437,7 @@ export default function App() {
       </main>
 
       {showShare && <SharePanel onClose={() => setShowShare(false)} />}
+      {showUsers && <UsersPanel onClose={() => setShowUsers(false)} />}
     </div>
   );
 }
