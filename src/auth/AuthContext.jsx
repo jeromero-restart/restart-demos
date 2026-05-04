@@ -58,6 +58,10 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const loginAsDev = () => {
+    setUser({ type: 'google', role: 'admin', name: 'Dev User', email: `dev@${import.meta.env.VITE_ALLOWED_DOMAIN || 'restart-ai.com'}`, picture: null });
+  };
+
   const loginAsGuest = (tokenData) => {
     const guest = { type: 'guest', ...tokenData };
     sessionStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(guest));
@@ -79,7 +83,7 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, login, loginAsGuest, logout }}>
+    <AuthContext.Provider value={{ user, login, loginAsDev, loginAsGuest, logout }}>
       {children}
     </AuthContext.Provider>
   );

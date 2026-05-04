@@ -13,7 +13,7 @@ const fontStyles = `
 `;
 
 export default function LoginScreen({ initialError }) {
-  const { login, loginAsGuest } = useAuth();
+  const { login, loginAsDev, loginAsGuest } = useAuth();
   const [mode, setMode] = useState('google'); // 'google' | 'guest'
   const [code, setCode] = useState('');
   const [error, setError] = useState(initialError || null);
@@ -43,9 +43,7 @@ export default function LoginScreen({ initialError }) {
     onError: () => setError('Error al iniciar sesión con Google.'),
   });
 
-  const handleDevLogin = () => {
-    login({ name: 'Dev User', email: `dev@${ALLOWED_DOMAIN || 'restart-ai.com'}`, picture: null });
-  };
+  const handleDevLogin = () => loginAsDev();
 
   const handleGuestLogin = async (e) => {
     e.preventDefault();

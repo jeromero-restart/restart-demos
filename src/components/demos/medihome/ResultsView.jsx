@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, ChevronRight, RefreshCw } from 'lucide-react';
+import { Download, ChevronRight, RefreshCw, Trash2 } from 'lucide-react';
 
 const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const fmtPeriod = ([m, y]) => `${MONTHS[(m || 1) - 1]} ${y}`;
@@ -21,6 +21,15 @@ export default function ResultsView({ apiUrl, onDetail }) {
   };
 
   useEffect(fetchRecords, []);
+
+  const deleteRecord = async (e, id) => {
+    e.stopPropagation();
+    if (!confirm('¿Eliminar este registro?')) return;
+    try {
+      await fetch(`${API}/assistance_registry?registry_id=${id}`, { method: 'DELETE' });
+      setRecords(prev => prev.filter(r => r.key !== id));
+    } catch { /* ignore */ }
+  };
 
   const downloadExcel = async (e, id) => {
     e.stopPropagation();
@@ -106,6 +115,13 @@ export default function ResultsView({ apiUrl, onDetail }) {
                     className="p-1.5 border border-[#EDEFFE]/30 text-[#EDEFFE]/40 hover:border-[#EDEFFE] hover:text-[#EDEFFE] transition-colors"
                   >
                     <Download className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={(e) => deleteRecord(e, key)}
+                    title="Eliminar registro"
+                    className="p-1.5 border border-[#EDEFFE]/30 text-[#EDEFFE]/40 hover:border-red-400 hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" />
                   </button>
                   <ChevronRight className="w-4 h-4 text-[#EDEFFE]/20 group-hover:text-[#EDEFFE] transition-colors" />
                 </div>

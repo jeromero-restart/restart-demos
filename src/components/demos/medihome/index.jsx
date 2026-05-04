@@ -3,12 +3,12 @@ import UploadView from './UploadView';
 import ResultsView from './ResultsView';
 import DetailView from './DetailView';
 
-export default function MedihomeDemo({ apiUrl }) {
+export default function MedihomeDemo({ apiUrl, onExpandToggle }) {
   const [view, setView] = useState('upload');
   const [selectedId, setSelectedId] = useState(null);
 
   const goToDetail = (id) => { setSelectedId(id); setView('detail'); };
-  const goToResults = () => setView('results');
+  const goToResults = () => { setView('results'); onExpandToggle?.(false); };
 
   return (
     <div className="h-full flex flex-col font-sans">
@@ -34,7 +34,7 @@ export default function MedihomeDemo({ apiUrl }) {
       <div className="flex-1 overflow-hidden">
         {view === 'upload'  && <UploadView apiUrl={apiUrl} onSuccess={goToResults} />}
         {view === 'results' && <ResultsView apiUrl={apiUrl} onDetail={goToDetail} />}
-        {view === 'detail'  && <DetailView apiUrl={apiUrl} id={selectedId} onBack={goToResults} />}
+        {view === 'detail'  && <DetailView apiUrl={apiUrl} id={selectedId} onBack={goToResults} onExpandToggle={onExpandToggle} />}
       </div>
     </div>
   );

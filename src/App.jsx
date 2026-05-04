@@ -53,6 +53,7 @@ export default function App() {
   const [activeDemo, setActiveDemo] = useState(null);
   const [showShare, setShowShare] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
+  const [demoExpanded, setDemoExpanded] = useState(false);
 
   const timeLeft = useCountdown(user?.type === 'guest' ? user.expiresAt : null);
 
@@ -83,7 +84,7 @@ export default function App() {
 
         <header className="bg-[#0000FF] border-b-2 border-[#EDEFFE] sticky top-0 z-50 p-3 md:p-4 flex justify-between items-center gap-2">
           <button
-            onClick={() => setActiveDemo(null)}
+            onClick={() => { setActiveDemo(null); setDemoExpanded(false); }}
             className="flex items-center gap-1 md:gap-2 font-sans font-bold uppercase text-xs md:text-sm bg-[#EDEFFE] text-[#0000FF] px-3 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] hover:border-[#EDEFFE] border-2 border-[#EDEFFE] transition-colors shadow-[2px_2px_0_#1F1F1F] md:shadow-[4px_4px_0_#1F1F1F] flex-shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -121,7 +122,7 @@ export default function App() {
 
             <div className="flex-1 overflow-hidden bg-[#1F1F1F]">
               {activeDemo.id === 3 ? (
-                <MedihomeDemo apiUrl={activeDemo.apiUrl} />
+                <MedihomeDemo apiUrl={activeDemo.apiUrl} onExpandToggle={setDemoExpanded} />
               ) : activeDemo.botUrl ? (
                 <TelegramLauncher
                   botUrl={activeDemo.botUrl}
@@ -144,7 +145,7 @@ export default function App() {
             </div>
           </section>
 
-          <aside className="flex-1 flex flex-col gap-6 xl:overflow-y-auto pb-8 xl:pb-0">
+          {!demoExpanded && <aside className="flex-1 flex flex-col gap-6 xl:overflow-y-auto pb-8 xl:pb-0">
             <div className="bg-[#EDEFFE] border-2 border-[#1F1F1F] p-4 md:p-6 shadow-[6px_6px_0_#1F1F1F] md:shadow-[8px_8px_0_#1F1F1F]">
               <h1 className="font-display text-4xl md:text-5xl text-[#0000FF] uppercase leading-[0.8] mb-4">
                 {activeDemo.title}
@@ -194,7 +195,7 @@ export default function App() {
                 })}
               </ul>
             </div>
-          </aside>
+          </aside>}
         </main>
       </div>
     );
