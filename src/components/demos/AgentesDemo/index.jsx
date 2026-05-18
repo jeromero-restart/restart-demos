@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Loader, AlertCircle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 
 const TEMPERATURE_LABELS = {
   low:    { max: 0.35, label: 'Conservador', desc: 'Respuestas predecibles y consistentes' },
@@ -21,19 +21,120 @@ const CALL_STATUS = {
   ERROR:       'error',
 };
 
+const PRESETS = [
+  {
+    id: 'cobranza',
+    name: 'Agente de Cobranza',
+    description: 'Recupera deuda y acuerda fechas de pago',
+    temperature: 0.3,
+    first_message: '¡Hola, buen día! Mi nombre es Valentina y llamo de parte de nuestro equipo de cuentas. ¿Estoy hablando con el titular de la cuenta?',
+    prompt: `Sos un agente de cobranzas profesional y empático. Tu objetivo es informar al cliente sobre una deuda pendiente y acordar una fecha o modalidad de pago.
+
+Seguí este flujo:
+1. Confirmá la identidad del cliente antes de dar cualquier información
+2. Informá el monto aproximado de la deuda y su fecha de vencimiento de forma clara y sin rodeos
+3. Preguntá si puede abonar hoy o proponé alternativas (cuotas, fecha futura concreta)
+4. Confirmá el acuerdo, agradecé y cerrá la conversación
+
+Reglas de comportamiento:
+- Tono cordial y profesional, nunca agresivo ni intimidante
+- Si el cliente no puede pagar, registrá la situación y ofrecé derivarlo a un asesor
+- No reveles información de la deuda si no confirmaste la identidad
+- Sé breve: la llamada no debe durar más de 4 minutos`,
+  },
+  {
+    id: 'encuesta',
+    name: 'Encuestador de Satisfacción',
+    description: 'Mide NPS y recopila feedback de clientes',
+    temperature: 0.2,
+    first_message: '¡Hola! Mi nombre es Sofía y llamo de parte del equipo de calidad. ¿Tiene dos minutos para responder una breve encuesta sobre su experiencia con nosotros?',
+    prompt: `Sos un encuestador telefónico de satisfacción al cliente. Tu objetivo es obtener feedback genuino y puntajes NPS de forma natural y conversacional.
+
+Preguntas a realizar en este orden:
+1. "En una escala del 1 al 10, ¿qué tan satisfecho/a estás con nuestro servicio en general?"
+2. "¿Qué es lo que más valorás de nosotros?"
+3. "¿Hay algo puntual que mejorarías o que te haya generado alguna incomodidad?"
+4. "¿Nos recomendarías a un familiar o amigo? ¿Por qué?"
+
+Instrucciones:
+- Esperá la respuesta completa antes de pasar a la siguiente pregunta
+- Si el puntaje es 6 o menos, preguntá específicamente qué falló
+- Respondé con empatía ante críticas ("gracias por la honestidad, eso nos ayuda mucho a mejorar")
+- No defientas a la empresa si hay quejas, solo registrá y agradecé
+- Al finalizar, agradecé y avisá que el feedback será compartido con el equipo
+- Duración máxima: 3 minutos`,
+  },
+  {
+    id: 'retencion',
+    name: 'Retención de Bajas',
+    description: 'Evita cancelaciones con ofertas personalizadas',
+    temperature: 0.5,
+    first_message: '¡Hola, buen día! Habla Lucía del equipo de atención al cliente. Me comunico porque vimos que iniciaste una solicitud de baja de tu servicio y quería entender qué pasó para ver si podemos ayudarte.',
+    prompt: `Sos un agente especializado en retención de clientes. Tu objetivo es evitar la cancelación del servicio escuchando activamente y ofreciendo soluciones concretas.
+
+Flujo de la llamada:
+1. Escuchá sin interrumpir el motivo de la baja — dejá que el cliente se exprese completamente
+2. Validá su experiencia con empatía genuina ("entiendo perfectamente, lamento que hayas vivido eso")
+3. Según el motivo identificado, ofrecé una solución específica:
+   - Precio elevado → ofrecé descuento del 20-30% por 3 meses o plan más económico
+   - Falta de uso → mostrá 1 o 2 funcionalidades clave que quizás no conoce
+   - Problema técnico → prometé escalado prioritario con seguimiento personal
+   - Mala atención previa → pedí disculpas directas y ofrecé compensación concreta
+   - Se va a la competencia → preguntá qué ofrece el competidor y evaluá si podés igualar
+4. Si acepta quedarse, confirmá los beneficios acordados con claridad
+5. Si definitivamente no acepta, cerrá de forma amigable y dejá la puerta abierta
+
+Reglas importantes:
+- Nunca presiones ni repitas la oferta más de dos veces
+- El cliente debe sentir que la decisión es completamente suya
+- No hagas promesas que no podás cumplir`,
+  },
+  {
+    id: 'citas',
+    name: 'Coordinador de Citas',
+    description: 'Agenda, confirma y reprograma turnos',
+    temperature: 0.25,
+    first_message: '¡Hola! Habla Rodrigo del equipo de coordinación. Lo llamo para gestionar su turno. ¿Me puede confirmar su nombre completo?',
+    prompt: `Sos un coordinador de citas telefónico. Tu objetivo es agendar, confirmar o reprogramar turnos de forma clara, precisa y eficiente.
+
+Flujo principal:
+1. Confirmá el nombre completo del cliente
+2. Identificá si quiere: agendar un turno nuevo, confirmar uno existente o reprogramar
+3. Para turno nuevo:
+   - Consultá preferencia de horario (mañana/tarde) y días disponibles
+   - Ofrecé exactamente 2 opciones de fecha y hora concretas
+   - Confirmá la opción elegida
+4. Para reprogramación: primero cancelá el turno anterior, luego seguí el flujo de turno nuevo
+5. Antes de cerrar, confirmá: nombre, fecha, hora y motivo de la consulta
+6. Informá si hay alguna preparación necesaria para el turno
+
+Reglas de comportamiento:
+- Usá siempre fecha y hora exactas, nunca términos vagos como "a la tarde" o "en unos días"
+- Si no hay disponibilidad en la fecha pedida, ofrecé la más cercana disponible
+- Repetí los datos del turno confirmado al final para evitar errores
+- La llamada debe ser breve y eficiente, no más de 3 minutos`,
+  },
+];
+
 export default function AgentesDemo({ apiUrl }) {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
   const [voices, setVoices]         = useState([]);
 
-  // Agent config
   const [prompt, setPrompt]         = useState('');
   const [firstMessage, setFirstMessage] = useState('');
   const [temperature, setTemperature]   = useState(0.7);
   const [selectedVoice, setSelectedVoice] = useState(null);
+  const [activePreset, setActivePreset]   = useState(null);
 
-  // Call
   const [phone, setPhone]           = useState('');
+
+  // History
+  const [tab, setTab]                     = useState('config');
+  const [conversations, setConversations] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [expandedId, setExpandedId]       = useState(null);
+  const [transcripts, setTranscripts]     = useState({});
   const [callStatus, setCallStatus] = useState(CALL_STATUS.IDLE);
   const [callError, setCallError]   = useState('');
 
@@ -59,6 +160,37 @@ export default function AgentesDemo({ apiUrl }) {
         setLoading(false);
       });
   }, [apiUrl]);
+
+  const loadHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    try {
+      const r = await fetch(`${apiUrl}/api/conversations`);
+      const data = await r.json();
+      setConversations(data.conversations || []);
+    } catch (_) {}
+    setHistoryLoading(false);
+  }, [apiUrl]);
+
+  useEffect(() => {
+    if (tab === 'history') loadHistory();
+  }, [tab, loadHistory]);
+
+  const loadTranscript = async (id) => {
+    if (transcripts[id]) { setExpandedId(expandedId === id ? null : id); return; }
+    try {
+      const r = await fetch(`${apiUrl}/api/conversations/${id}`);
+      const data = await r.json();
+      setTranscripts(prev => ({ ...prev, [id]: data.transcript || [] }));
+      setExpandedId(id);
+    } catch (_) {}
+  };
+
+  const applyPreset = (preset) => {
+    setActivePreset(preset.id);
+    setPrompt(preset.prompt);
+    setFirstMessage(preset.first_message);
+    setTemperature(preset.temperature);
+  };
 
   const handleCall = async () => {
     if (!phone.trim() || !selectedVoice) return;
@@ -90,8 +222,6 @@ export default function AgentesDemo({ apiUrl }) {
 
   const tempInfo = temperatureLabel(temperature);
 
-  // ── Loading / Error ──────────────────────────────────────────────────────────
-
   if (loading) return (
     <div className="flex-1 flex items-center justify-center h-full text-[#EDEFFE]">
       <div className="text-center">
@@ -110,26 +240,181 @@ export default function AgentesDemo({ apiUrl }) {
     </div>
   );
 
-  // ── Main UI ──────────────────────────────────────────────────────────────────
+  const statusLabel = (s) => ({ done: 'Completada', in_progress: 'En curso', error: 'Error' }[s] || s);
+  const statusColor = (s) => ({ done: 'text-green-400', in_progress: 'text-yellow-400', error: 'text-red-400' }[s] || 'text-[#EDEFFE]/40');
+  const fmtDate = (iso) => {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      + ' ' + d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
-    <div className="h-full flex flex-col lg:flex-row overflow-hidden text-[#EDEFFE]">
+    <div className="h-full flex flex-col overflow-hidden text-[#EDEFFE]">
+
+      {/* ── Tab bar ────────────────────────────────────────────────────────── */}
+      <div className="flex border-b-2 border-[#EDEFFE] flex-shrink-0">
+        {[['config', 'Configurar'], ['history', 'Historial de Llamadas']].map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`px-6 py-3 font-display text-sm uppercase tracking-wide transition-colors ${
+              tab === key
+                ? 'bg-[#EDEFFE] text-[#0000FF]'
+                : 'text-[#EDEFFE]/60 hover:text-[#EDEFFE]'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── History panel ──────────────────────────────────────────────────── */}
+      {tab === 'history' && (
+        <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex justify-between items-center mb-4">
+            <span className="font-display text-lg uppercase">// Transcripciones</span>
+            <button onClick={loadHistory} className="flex items-center gap-1.5 text-[#EDEFFE]/50 hover:text-[#EDEFFE] transition-colors text-xs font-bold uppercase">
+              <RefreshCw className={`w-3.5 h-3.5 ${historyLoading ? 'animate-spin' : ''}`} /> Actualizar
+            </button>
+          </div>
+
+          {historyLoading && (
+            <div className="flex items-center gap-2 text-[#EDEFFE]/50 text-sm">
+              <Loader className="w-4 h-4 animate-spin" /> Cargando...
+            </div>
+          )}
+
+          {!historyLoading && conversations.length === 0 && (
+            <div className="text-[#EDEFFE]/40 text-sm font-sans text-center py-16">
+              No hay llamadas registradas aún.
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            {conversations.map(conv => (
+              <div key={conv.id} className="border-2 border-[#EDEFFE]/20 hover:border-[#EDEFFE]/40 transition-colors">
+                <button
+                  className="w-full text-left p-4 flex items-center gap-4"
+                  onClick={() => loadTranscript(conv.id)}
+                >
+                  <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+                    <div>
+                      <div className="text-[#EDEFFE]/40 text-[10px] uppercase font-bold mb-0.5">Teléfono</div>
+                      <div className="font-display text-base">{conv.phone}</div>
+                    </div>
+                    <div>
+                      <div className="text-[#EDEFFE]/40 text-[10px] uppercase font-bold mb-0.5">Fecha y hora</div>
+                      <div className="font-sans text-xs">{fmtDate(conv.date)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[#EDEFFE]/40 text-[10px] uppercase font-bold mb-0.5">Duración</div>
+                      <div className="font-mono text-sm flex items-center gap-1"><Clock className="w-3 h-3" />{conv.duration}</div>
+                    </div>
+                    <div>
+                      <div className="text-[#EDEFFE]/40 text-[10px] uppercase font-bold mb-0.5">Estado</div>
+                      <div className={`text-xs font-bold uppercase ${statusColor(conv.status)}`}>{statusLabel(conv.status)}</div>
+                    </div>
+                  </div>
+                  {expandedId === conv.id
+                    ? <ChevronUp className="w-4 h-4 text-[#EDEFFE]/40 flex-shrink-0" />
+                    : <ChevronDown className="w-4 h-4 text-[#EDEFFE]/40 flex-shrink-0" />}
+                </button>
+
+                {expandedId === conv.id && (
+                  <div className="border-t-2 border-[#EDEFFE]/10 px-4 py-3 flex flex-col gap-2 max-h-72 overflow-y-auto">
+                    {!transcripts[conv.id] && (
+                      <div className="flex items-center gap-2 text-[#EDEFFE]/40 text-xs">
+                        <Loader className="w-3 h-3 animate-spin" /> Cargando transcripción...
+                      </div>
+                    )}
+                    {(transcripts[conv.id] || []).map((msg, i) => (
+                      <div key={i} className={`flex gap-3 ${msg.role === 'agent' ? '' : 'flex-row-reverse'}`}>
+                        <span className={`text-[10px] font-bold uppercase flex-shrink-0 mt-1 w-12 ${msg.role === 'agent' ? 'text-[#EDEFFE]/40' : 'text-[#0000FF] text-right'}`}>
+                          {msg.role === 'agent' ? 'Agente' : 'Cliente'}
+                        </span>
+                        <div className={`text-xs font-sans px-3 py-2 max-w-[75%] border ${
+                          msg.role === 'agent'
+                            ? 'bg-[#0000FF]/20 border-[#EDEFFE]/20 text-[#EDEFFE]'
+                            : 'bg-[#EDEFFE]/10 border-[#EDEFFE]/30 text-[#EDEFFE]'
+                        }`}>
+                          {msg.message}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Config panel ───────────────────────────────────────────────────── */}
+      {tab === 'config' && (
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
       {/* ── Left: Agent config ─────────────────────────────────────────────── */}
       <div className="flex-[3] overflow-y-auto p-5 flex flex-col gap-6 border-b-2 lg:border-b-0 lg:border-r-2 border-[#EDEFFE]">
 
-        {/* System prompt */}
+        {/* Presets */}
         <div>
           <label className="block font-display text-lg uppercase mb-2">
-            // SYSTEM PROMPT
+            // PRESETS
           </label>
+          <div className="grid grid-cols-2 gap-2">
+            {PRESETS.map(preset => (
+              <button
+                key={preset.id}
+                onClick={() => applyPreset(preset)}
+                className={`text-left p-3 border-2 transition-all ${
+                  activePreset === preset.id
+                    ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE] shadow-[4px_4px_0_#0000FF]'
+                    : 'bg-[#0000FF]/10 text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE] hover:bg-[#0000FF]/20'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Zap className={`w-3 h-3 flex-shrink-0 ${activePreset === preset.id ? 'text-[#0000FF]' : 'text-[#EDEFFE]/50'}`} />
+                  <span className="font-display text-sm uppercase leading-tight">{preset.name}</span>
+                </div>
+                <p className={`font-sans text-[11px] leading-tight ${activePreset === preset.id ? 'text-[#0000FF]/70' : 'text-[#EDEFFE]/50'}`}>
+                  {preset.description}
+                </p>
+              </button>
+            ))}
+            <button
+              onClick={() => { setActivePreset(null); setPrompt(''); setFirstMessage(''); setTemperature(0.7); }}
+              className={`text-left p-3 border-2 border-dashed transition-all ${
+                activePreset === null && !prompt
+                  ? 'border-[#EDEFFE] text-[#EDEFFE]'
+                  : 'border-[#EDEFFE]/30 text-[#EDEFFE]/50 hover:border-[#EDEFFE]/60 hover:text-[#EDEFFE]/80'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="font-display text-sm uppercase leading-tight">+ Personalizado</span>
+              </div>
+              <p className="font-sans text-[11px] leading-tight">Escribir prompt desde cero</p>
+            </button>
+          </div>
+        </div>
+
+        {/* System prompt */}
+        <div>
+          <div className="flex justify-between items-baseline mb-2">
+            <label className="font-display text-lg uppercase">// SYSTEM PROMPT</label>
+            {activePreset && (
+              <span className="text-[10px] font-bold uppercase text-[#EDEFFE]/40 font-mono">
+                preset: {PRESETS.find(p => p.id === activePreset)?.name}
+              </span>
+            )}
+          </div>
           <textarea
             ref={promptRef}
             value={prompt}
-            onChange={e => setPrompt(e.target.value)}
-            rows={7}
+            onChange={e => { setPrompt(e.target.value); setActivePreset(null); }}
+            rows={8}
             className="w-full bg-[#0000FF]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-sans text-sm p-3 resize-none focus:outline-none transition-colors"
-            placeholder="Describí el rol, objetivo y comportamiento del agente..."
+            placeholder="Describí el rol, objetivo y comportamiento del agente, o seleccioná un preset arriba..."
           />
           <div className="flex justify-end mt-1">
             <span className="text-[10px] text-[#EDEFFE]/40 font-mono">{prompt.length} caracteres</span>
@@ -219,6 +504,7 @@ export default function AgentesDemo({ apiUrl }) {
           <h3 className="font-display text-lg uppercase text-[#EDEFFE] border-b border-[#EDEFFE]/20 pb-2 mb-1">
             // CONFIG ACTIVA
           </h3>
+          <Row label="Preset" value={activePreset ? PRESETS.find(p => p.id === activePreset)?.name : 'Personalizado'} />
           <Row label="Voz" value={selectedVoice?.name || '—'} />
           <Row label="Temperatura" value={`${tempInfo.label} (${temperature.toFixed(2)})`} />
           <Row label="Idioma" value="Español" />
@@ -291,6 +577,8 @@ export default function AgentesDemo({ apiUrl }) {
           </span>
         </div>
       </div>
+      </div>
+      )}
     </div>
   );
 }
