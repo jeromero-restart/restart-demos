@@ -17,7 +17,7 @@ export const demosData = [
   },
   {
     id: 2,
-    apiUrl: null,
+    apiUrl: import.meta.env.VITE_AGENTES_API_URL || 'http://localhost:8002',
     title: "AGENTES TELEFÓNICOS AUTÓNOMOS",
     vertical: "Todas",
     tech: "Voice AI",
@@ -83,6 +83,22 @@ export const demosData = [
       "↑ +20–35% satisfacción del usuario"
     ]
   },
+  {
+    id: 5,
+    apiUrl: import.meta.env.VITE_SIALAR_API_URL || 'http://localhost:8000',
+    title: "DETECCIÓN DE EVENTOS EN CÁMARA EN VIVO",
+    vertical: "Seguridad",
+    tech: "Vision AI",
+    description: "Detecta personas, vehículos y animales en tiempo real mediante IA de Visión. Definí zonas de interés sobre el video y configurá reglas de alerta por conteo, permanencia o dirección de ingreso.",
+    objective: "Reducir incidentes de seguridad, automatizar la vigilancia y generar alertas accionables sin intervención humana continua.",
+    ascii: "10110010 01101101",
+    impactMetrics: [
+      "↓ -60% tiempo de respuesta ante incidentes",
+      "↑ +80% cobertura de vigilancia automatizada",
+      "↓ -45% falsos positivos vs. detección manual",
+      "↑ +3x capacidad de monitoreo simultáneo"
+    ]
+  },
 ];
 
-export const verticals = ["Todas", "Finanzas", "Retail", "Salud", "Legal", "Manufactura"];
+export const verticals = ["Todas", "Finanzas", "Retail", "Salud", "Legal", "Manufactura", "Seguridad"];
