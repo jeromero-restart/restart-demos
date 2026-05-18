@@ -37,6 +37,22 @@ export default function SialarDemo({ apiUrl }) {
   const [submitting, setSubmitting] = useState(false);
 
   const canvasRef = useRef(null);
+  const streamImgRef = useRef(null);
+  const snapCanvasRef = useRef(null);
+
+  const captureSnapshot = () => {
+    const img = streamImgRef.current;
+    const canvas = snapCanvasRef.current;
+    if (!img || !canvas) return null;
+    canvas.width  = img.naturalWidth  || img.clientWidth  || 640;
+    canvas.height = img.naturalHeight || img.clientHeight || 360;
+    try {
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.75);
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -146,7 +162,8 @@ export default function SialarDemo({ apiUrl }) {
       try {
         const data = JSON.parse(e.data);
         if (data.type === 'event') {
-          setEvents(prev => [{ ...data, _ts: Date.now() }, ...prev].slice(0, 40));
+          const snapshot = captureSnapshot();
+          setEvents(prev => [{ ...data, _ts: Date.now(), snapshot }, ...prev].slice(0, 40));
         }
       } catch {}
     };
@@ -429,10 +446,13 @@ export default function SialarDemo({ apiUrl }) {
         {/* MJPEG stream */}
         <div className="flex-[2] bg-black flex items-center justify-center min-h-[220px]">
           <img
+            ref={streamImgRef}
+            crossOrigin="anonymous"
             src={`${apiUrl}/api/cameras/${selectedCamera.id}/live/video?area_id=${areaId}`}
             alt="Stream en vivo"
             className="max-w-full max-h-full object-contain"
           />
+          <canvas ref={snapCanvasRef} className="hidden" />
         </div>
 
         {/* Events panel */}
@@ -474,11 +494,19 @@ export default function SialarDemo({ apiUrl }) {
                         {ev.timestamp_s?.toFixed(1)}s
                       </span>
                     </div>
-                    <p className="font-sans text-xs text-[#EDEFFE]/70">
+                    <p className="font-sans text-xs text-[#EDEFFE]/70 mb-2">
                       {ev.class_name === 'person' ? 'Persona'
                         : ev.class_name === 'vehicle' ? 'Vehículo'
                         : ev.class_name} #{ev.track_id}
                     </p>
+                    {ev.snapshot && (
+                      <img
+                        src={ev.snapshot}
+                        alt="snapshot"
+                        className="w-full border border-[#EDEFFE]/20 object-cover"
+                        style={{ maxHeight: '90px' }}
+                      />
+                    )}
                   </div>
                 ))}
               </div>

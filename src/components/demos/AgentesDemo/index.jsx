@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw, Volume2, Square } from 'lucide-react';
 
 const TEMPERATURE_LABELS = {
   low:    { max: 0.35, label: 'Conservador', desc: 'Respuestas predecibles y consistentes' },
@@ -126,6 +126,8 @@ export default function AgentesDemo({ apiUrl }) {
   const [temperature, setTemperature]   = useState(0.7);
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [activePreset, setActivePreset]   = useState(null);
+  const [playingId, setPlayingId]         = useState(null);
+  const audioRef = useRef(null);
 
   const [phone, setPhone]           = useState('');
 
@@ -160,6 +162,22 @@ export default function AgentesDemo({ apiUrl }) {
         setLoading(false);
       });
   }, [apiUrl]);
+
+  const togglePlay = (voice, e) => {
+    e.stopPropagation();
+    if (playingId === voice.id) {
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setPlayingId(null);
+      return;
+    }
+    if (audioRef.current) { audioRef.current.pause(); }
+    const audio = new Audio(voice.preview_url);
+    audio.onended = () => setPlayingId(null);
+    audio.play();
+    audioRef.current = audio;
+    setPlayingId(voice.id);
+  };
 
   const loadHistory = useCallback(async () => {
     setHistoryLoading(true);
@@ -477,13 +495,34 @@ export default function AgentesDemo({ apiUrl }) {
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className="font-display text-base uppercase">{voice.name}</span>
-                  <span className={`text-[10px] font-bold border px-1.5 py-0.5 uppercase ${
-                    selectedVoice?.id === voice.id
-                      ? 'border-[#0000FF] text-[#0000FF]'
-                      : 'border-[#EDEFFE]/30 text-[#EDEFFE]/50'
-                  }`}>
-                    {voice.gender}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-[10px] font-bold border px-1.5 py-0.5 uppercase ${
+                      selectedVoice?.id === voice.id
+                        ? 'border-[#0000FF] text-[#0000FF]'
+                        : 'border-[#EDEFFE]/30 text-[#EDEFFE]/50'
+                    }`}>
+                      {voice.gender}
+                    </span>
+                    {voice.preview_url && (
+                      <button
+                        onClick={(e) => togglePlay(voice, e)}
+                        title={playingId === voice.id ? 'Detener' : 'Escuchar preview'}
+                        className={`p-1 border transition-colors ${
+                          playingId === voice.id
+                            ? selectedVoice?.id === voice.id
+                              ? 'border-[#0000FF] text-[#0000FF] bg-[#0000FF]/10'
+                              : 'border-[#EDEFFE] text-[#EDEFFE] bg-[#EDEFFE]/10'
+                            : selectedVoice?.id === voice.id
+                              ? 'border-[#0000FF]/40 text-[#0000FF]/60 hover:border-[#0000FF]'
+                              : 'border-[#EDEFFE]/20 text-[#EDEFFE]/40 hover:border-[#EDEFFE]/60'
+                        }`}
+                      >
+                        {playingId === voice.id
+                          ? <Square className="w-2.5 h-2.5" />
+                          : <Volume2 className="w-2.5 h-2.5" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className={`font-sans text-xs ${
                   selectedVoice?.id === voice.id ? 'text-[#0000FF]/70' : 'text-[#EDEFFE]/60'
