@@ -85,7 +85,7 @@ export const demosData = [
   },
   {
     id: 5,
-    apiUrl: import.meta.env.VITE_SIALAR_API_URL || 'http://localhost:8000',
+    apiUrl: import.meta.env.VITE_LIVECAM_API_URL || 'http://localhost:8001',
     title: "DETECCIÓN DE EVENTOS EN CÁMARA EN VIVO",
     vertical: "Seguridad",
     tech: "Vision AI",

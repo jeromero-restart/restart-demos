@@ -4,7 +4,7 @@ import { useAuth } from './auth/AuthContext';
 import SharePanel from './components/SharePanel';
 import MedihomeDemo from './components/demos/medihome/index';
 import TelegramLauncher from './components/demos/TelegramLauncher';
-import SialarDemo from './components/demos/SialarDemo/index';
+import LiveCamDemo from './components/demos/LiveCamDemo/index';
 import AgentesDemo from './components/demos/AgentesDemo/index';
 import UsersPanel from './components/admin/UsersPanel';
 import { demosData, verticals } from './data/demos';
@@ -126,7 +126,7 @@ export default function App() {
               {activeDemo.id === 3 ? (
                 <MedihomeDemo apiUrl={activeDemo.apiUrl} onExpandToggle={setDemoExpanded} />
               ) : activeDemo.id === 5 ? (
-                <SialarDemo apiUrl={activeDemo.apiUrl} />
+                <LiveCamDemo apiUrl={activeDemo.apiUrl} />
               ) : activeDemo.id === 2 ? (
                 <AgentesDemo apiUrl={activeDemo.apiUrl} />
               ) : activeDemo.botUrl ? (

@@ -19,7 +19,7 @@ const TRIGGER_LABELS = {
   direction: (p) => `Ingreso desde el ${p.direction === 'N' ? 'Norte' : p.direction === 'S' ? 'Sur' : p.direction === 'E' ? 'Este' : 'Oeste'}`,
 };
 
-export default function SialarDemo({ apiUrl }) {
+export default function LiveCamDemo({ apiUrl }) {
   const [step, setStep] = useState('cameras');
   const [cameras, setCameras] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,7 @@ export default function SialarDemo({ apiUrl }) {
     setLoading(true);
     fetch(`${apiUrl}/api/cameras`)
       .then(r => {
-        if (!r.ok) throw new Error('No se pudo conectar al backend de Sialar');
+        if (!r.ok) throw new Error('No se pudo conectar al backend de detección');
         return r.json();
       })
       .then(data => { setCameras(data.cameras || []); setLoading(false); })
