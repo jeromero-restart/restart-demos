@@ -1,7 +1,7 @@
 export const demosData = [
   {
     id: 1,
-    apiUrl: null,
+    apiUrl: import.meta.env.VITE_PERFILADOR_API_URL || 'http://localhost:8004',
     title: "PERFILADOR DE CLIENTE EN TIENDA (Vision AI)",
     vertical: "Retail",
     tech: "Vision AI",
@@ -49,7 +49,7 @@ export const demosData = [
   },
   {
     id: 4,
-    apiUrl: null,
+    apiUrl: import.meta.env.VITE_AGENTE_API_URL || 'http://localhost:8200',
     botUrl: 'https://t.me/DPI_POC_bot',
     knowledgeBase: [
       {

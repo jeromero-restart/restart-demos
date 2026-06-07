@@ -6,6 +6,8 @@ import MedihomeDemo from './components/demos/medihome/index';
 import TelegramLauncher from './components/demos/TelegramLauncher';
 import LiveCamDemo from './components/demos/LiveCamDemo/index';
 import AgentesDemo from './components/demos/AgentesDemo/index';
+import PerfiladorDemo from './components/demos/PerfiladorDemo/index';
+import AgenteChatDemo from './components/demos/AgenteChatDemo/index';
 import UsersPanel from './components/admin/UsersPanel';
 import { demosData, verticals } from './data/demos';
 
@@ -125,10 +127,14 @@ export default function App() {
             <div className="flex-1 overflow-hidden bg-[#1F1F1F]">
               {activeDemo.id === 3 ? (
                 <MedihomeDemo apiUrl={activeDemo.apiUrl} onExpandToggle={setDemoExpanded} />
+              ) : activeDemo.id === 1 ? (
+                <PerfiladorDemo apiUrl={activeDemo.apiUrl} />
               ) : activeDemo.id === 5 ? (
                 <LiveCamDemo apiUrl={activeDemo.apiUrl} />
               ) : activeDemo.id === 2 ? (
                 <AgentesDemo apiUrl={activeDemo.apiUrl} />
+              ) : activeDemo.id === 4 ? (
+                <AgenteChatDemo apiUrl={activeDemo.apiUrl} knowledgeBase={activeDemo.knowledgeBase} />
               ) : activeDemo.botUrl ? (
                 <TelegramLauncher
                   botUrl={activeDemo.botUrl}
