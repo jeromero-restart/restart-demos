@@ -1,19 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, HardHat, ClipboardList, RefreshCw, FileText, ChevronRight } from 'lucide-react';
+import { Send, Loader2, HardHat, ClipboardList, RefreshCw, FileText, ChevronRight, BookOpen, X } from 'lucide-react';
 
 /**
  * Agente de conocimiento empresarial — chat web (stateless).
  *
- * Habla con el mismo backend RAG que el bot de Telegram vía POST {apiUrl}/chat
- * {role, query}. La respuesta llega segmentada en parts (text | figure); las
- * figuras traen una URL relativa que servimos desde {apiUrl}. El historial vive
- * solo en el navegador.
+ * POST {apiUrl}/chat {role, query} -> {parts:[text|figure], sources:[{title,page,url}]}.
+ * Figuras inline (GET /figure/{id}) y fuentes citables que abren el PDF original en
+ * un modal (GET /document/{id}#page=N). GET /documents lista lo que hay indexado.
  */
 
 const ROLES = [
   { key: 'tecnico', label: 'Técnico de Campo', icon: HardHat, desc: 'Respuestas cortas, accionables y con figuras. Optimizado para velocidad en campo.' },
   { key: 'supervisor', label: 'Supervisor', icon: ClipboardList, desc: 'Respuestas detalladas y estructuradas, con referencias a documento y página.' },
 ];
+
+const WELCOME = {
+  tecnico: 'Hola 👷 Veo que sos Técnico de Campo. Hacé tus consultas y te respondo corto y al grano, con imágenes cuando ayuden.',
+  supervisor: 'Hola 📋 Veo que sos Supervisor. Consultá lo que necesites y te doy respuestas detalladas, con referencias a documento y página.',
+};
 
 export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
   const API = (apiUrl || 'http://localhost:8200').replace(/\/$/, '');
@@ -22,13 +26,28 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [docs, setDocs] = useState([]);
+  const [showDocs, setShowDocs] = useState(false);
+  const [pdf, setPdf] = useState(null); // {url, title}
   const threadRef = useRef(null);
 
   const suggestions = knowledgeBase.flatMap((k) => k.questions || []).slice(0, 4);
 
   useEffect(() => {
+    fetch(`${API}/documents`)
+      .then((r) => (r.ok ? r.json() : { documents: [] }))
+      .then((d) => setDocs(d.documents || []))
+      .catch(() => setDocs([]));
+  }, [API]);
+
+  useEffect(() => {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
+
+  const chooseRole = (key) => {
+    setRole(key);
+    setMessages([{ role: 'assistant', parts: [{ type: 'text', text: WELCOME[key] }], sources: [] }]);
+  };
 
   const send = async (text) => {
     const query = (text ?? input).trim();
@@ -45,10 +64,10 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || 'Error en el backend');
       const data = await res.json();
-      setMessages((m) => [...m, { role: 'assistant', parts: data.parts || [] }]);
+      setMessages((m) => [...m, { role: 'assistant', parts: data.parts || [], sources: data.sources || [] }]);
     } catch (e) {
       setError(e.message || 'No se pudo conectar al agente.');
-      setMessages((m) => [...m, { role: 'assistant', parts: [{ type: 'text', text: '⚠️ No se pudo obtener respuesta.' }] }]);
+      setMessages((m) => [...m, { role: 'assistant', parts: [{ type: 'text', text: '⚠️ No se pudo obtener respuesta.' }], sources: [] }]);
     } finally {
       setLoading(false);
     }
@@ -68,7 +87,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
           {ROLES.map(({ key, label, icon: Icon, desc }) => (
             <button
               key={key}
-              onClick={() => setRole(key)}
+              onClick={() => chooseRole(key)}
               className="text-left border-2 border-[#EDEFFE] bg-[#0000FF]/10 p-4 hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors group shadow-[4px_4px_0_#1F1F1F]"
             >
               <Icon className="w-7 h-7 mb-2 text-[#EDEFFE] group-hover:text-[#0000FF]" />
@@ -77,52 +96,66 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
             </button>
           ))}
         </div>
+        {docs.length > 0 && (
+          <p className="font-sans text-[11px] text-[#EDEFFE]/40">
+            {docs.length} documento{docs.length !== 1 ? 's' : ''} cargado{docs.length !== 1 ? 's' : ''} en la base de conocimiento
+          </p>
+        )}
       </div>
     );
   }
 
   const activeRole = ROLES.find((r) => r.key === role);
+  const onlyWelcome = messages.length <= 1;
 
   return (
-    <div className="h-full flex flex-col font-sans">
+    <div className="h-full flex flex-col font-sans relative">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 px-4 py-2 border-b-2 border-[#EDEFFE]/20 flex-shrink-0">
         <div className="flex items-center gap-2 text-[#EDEFFE]">
           <activeRole.icon className="w-4 h-4" />
           <span className="font-display text-base uppercase tracking-widest">{activeRole.label}</span>
         </div>
-        <button
-          onClick={() => { setRole(null); setMessages([]); setError(null); }}
-          className="flex items-center gap-1 text-[10px] font-bold uppercase border border-[#EDEFFE]/40 px-2 py-1 text-[#EDEFFE]/60 hover:border-[#EDEFFE] hover:text-[#EDEFFE] transition-colors"
-        >
-          <RefreshCw className="w-3 h-3" /> Cambiar rol
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowDocs((v) => !v)}
+            className={`flex items-center gap-1 text-[10px] font-bold uppercase border px-2 py-1 transition-colors ${
+              showDocs ? 'border-[#EDEFFE] text-[#EDEFFE] bg-[#EDEFFE]/10' : 'border-[#EDEFFE]/40 text-[#EDEFFE]/60 hover:border-[#EDEFFE] hover:text-[#EDEFFE]'
+            }`}
+          >
+            <BookOpen className="w-3 h-3" /> {docs.length} docs
+          </button>
+          <button
+            onClick={() => { setRole(null); setMessages([]); setError(null); setShowDocs(false); }}
+            className="flex items-center gap-1 text-[10px] font-bold uppercase border border-[#EDEFFE]/40 px-2 py-1 text-[#EDEFFE]/60 hover:border-[#EDEFFE] hover:text-[#EDEFFE] transition-colors"
+          >
+            <RefreshCw className="w-3 h-3" /> Cambiar rol
+          </button>
+        </div>
       </div>
+
+      {/* Panel documentos cargados */}
+      {showDocs && (
+        <div className="border-b-2 border-[#EDEFFE]/20 bg-[#0000FF]/10 px-4 py-3">
+          <p className="font-display text-sm uppercase tracking-widest text-[#EDEFFE]/70 mb-2">/// Documentos cargados</p>
+          {docs.length === 0 ? (
+            <p className="font-sans text-xs text-[#EDEFFE]/40">No hay documentos indexados.</p>
+          ) : (
+            <ul className="flex flex-col gap-1">
+              {docs.map((d) => (
+                <li key={d.id} className="flex items-center gap-2 font-sans text-xs text-[#EDEFFE]/80">
+                  <FileText className="w-3 h-3 text-[#EDEFFE]/50 flex-shrink-0" />
+                  <span className="flex-1 truncate">{d.title}</span>
+                  {d.pages > 0 && <span className="text-[#EDEFFE]/40">{d.pages} pág.</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Thread */}
       <div ref={threadRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
-        {messages.length === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
-            <p className="font-sans text-xs text-[#EDEFFE]/40 max-w-xs">
-              Hacé una consulta sobre la documentación técnica.
-            </p>
-            {suggestions.length > 0 && (
-              <div className="flex flex-col gap-2 w-full max-w-sm">
-                {suggestions.map((q, i) => (
-                  <button
-                    key={i}
-                    onClick={() => send(q)}
-                    className="text-left flex items-start gap-2 border border-[#EDEFFE]/20 bg-[#0000FF]/10 px-3 py-2 hover:border-[#EDEFFE] transition-colors"
-                  >
-                    <ChevronRight className="w-3 h-3 text-[#EDEFFE]/40 flex-shrink-0 mt-0.5" />
-                    <span className="font-sans text-xs text-[#EDEFFE]/70 leading-relaxed">{q}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {m.role === 'user' ? (
@@ -147,10 +180,41 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
                     </div>
                   )
                 )}
+                {m.sources?.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {m.sources.map((s, k) => (
+                      <button
+                        key={k}
+                        onClick={() => setPdf({ url: `${API}${s.url}`, title: s.title })}
+                        title="Ver fuente en el PDF"
+                        className="flex items-center gap-1 text-[10px] font-bold border border-[#EDEFFE]/30 text-[#EDEFFE]/70 px-2 py-1 hover:border-[#EDEFFE] hover:text-[#EDEFFE] hover:bg-[#EDEFFE]/10 transition-colors"
+                      >
+                        <FileText className="w-3 h-3" /> {s.title} · pág. {s.page}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
         ))}
+
+        {/* Sugerencias bajo la bienvenida */}
+        {onlyWelcome && suggestions.length > 0 && (
+          <div className="flex flex-col gap-2 w-full max-w-sm">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#EDEFFE]/40">Probá preguntar</p>
+            {suggestions.map((q, i) => (
+              <button
+                key={i}
+                onClick={() => send(q)}
+                className="text-left flex items-start gap-2 border border-[#EDEFFE]/20 bg-[#0000FF]/10 px-3 py-2 hover:border-[#EDEFFE] transition-colors"
+              >
+                <ChevronRight className="w-3 h-3 text-[#EDEFFE]/40 flex-shrink-0 mt-0.5" />
+                <span className="font-sans text-xs text-[#EDEFFE]/70 leading-relaxed">{q}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {loading && (
           <div className="flex justify-start">
@@ -183,6 +247,27 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
           </button>
         </div>
       </div>
+
+      {/* Modal de PDF */}
+      {pdf && (
+        <div className="absolute inset-0 z-50 bg-black/80 flex flex-col p-3 md:p-6" onClick={() => setPdf(null)}>
+          <div className="flex items-center justify-between mb-2" onClick={(e) => e.stopPropagation()}>
+            <span className="font-display text-base uppercase tracking-widest text-[#EDEFFE] truncate">{pdf.title}</span>
+            <button
+              onClick={() => setPdf(null)}
+              className="flex items-center gap-1 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors"
+            >
+              <X className="w-4 h-4" /> Cerrar
+            </button>
+          </div>
+          <iframe
+            src={pdf.url}
+            title={pdf.title}
+            className="flex-1 w-full bg-white border-2 border-[#EDEFFE]"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
