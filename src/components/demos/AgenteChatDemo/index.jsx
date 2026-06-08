@@ -49,13 +49,19 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
     setMessages([{ role: 'assistant', parts: [{ type: 'text', text: WELCOME[key] }], sources: [] }]);
   };
 
-  const send = async (text) => {
-    const query = (text ?? input).trim();
-    if (!query || loading || !role) return;
-    setError(null);
-    setInput('');
-    setMessages((m) => [...m, { role: 'user', text: query }]);
-    setLoading(true);
+  // Flag para rollback inmediato: poné STREAM=false y vuelve al comportamiento previo.
+  const STREAM = true;
+
+  const patchLast = (updater) =>
+    setMessages((m) => {
+      if (!m.length) return m;
+      const copy = m.slice();
+      copy[copy.length - 1] = updater(copy[copy.length - 1]);
+      return copy;
+    });
+
+  // Camino clásico (no streaming) — idéntico al original, sirve de fallback.
+  const runNonStream = async (query) => {
     try {
       const res = await fetch(`${API}/chat`, {
         method: 'POST',
@@ -68,12 +74,117 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
     } catch (e) {
       setError(e.message || 'No se pudo conectar al agente.');
       setMessages((m) => [...m, { role: 'assistant', parts: [{ type: 'text', text: '⚠️ No se pudo obtener respuesta.' }], sources: [] }]);
+    }
+  };
+
+  // Camino streaming (SSE): meta (figuras+fuentes) → deltas de texto → done.
+  const runStream = async (query) => {
+    setMessages((m) => [...m, { role: 'assistant', text: '', figures: {}, sources: [], streaming: true }]);
+    try {
+      const res = await fetch(`${API}/chat/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role, query }),
+      });
+      if (!res.ok || !res.body) throw new Error('stream_unavailable');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let streamErr = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let nl;
+        while ((nl = buffer.indexOf('\n\n')) !== -1) {
+          const frame = buffer.slice(0, nl);
+          buffer = buffer.slice(nl + 2);
+          const dataLine = frame.split('\n').find((l) => l.startsWith('data:'));
+          if (!dataLine) continue;
+          const payload = dataLine.slice(5).trim();
+          if (!payload) continue;
+          let evt;
+          try { evt = JSON.parse(payload); } catch { continue; }
+          if (evt.type === 'meta') {
+            patchLast((p) => ({ ...p, figures: evt.figures || {}, sources: evt.sources || [] }));
+          } else if (evt.type === 'delta') {
+            patchLast((p) => ({ ...p, text: (p.text || '') + evt.text }));
+          } else if (evt.type === 'error') {
+            streamErr = evt.detail || 'error';
+          }
+        }
+      }
+      patchLast((p) => ({ ...p, streaming: false }));
+      if (streamErr) throw new Error(streamErr);
+    } catch (e) {
+      // Si el stream falla sin texto, removemos el placeholder y caemos al método clásico.
+      let hadText = false;
+      setMessages((m) => {
+        const last = m[m.length - 1];
+        if (last && last.role === 'assistant' && last.streaming !== undefined) {
+          hadText = !!(last.text && last.text.trim());
+          if (!hadText) return m.slice(0, -1);
+          return m.map((x, i) => (i === m.length - 1 ? { ...x, streaming: false } : x));
+        }
+        return m;
+      });
+      if (!hadText) await runNonStream(query);
+    }
+  };
+
+  const send = async (text) => {
+    const query = (text ?? input).trim();
+    if (!query || loading || !role) return;
+    setError(null);
+    setInput('');
+    setMessages((m) => [...m, { role: 'user', text: query }]);
+    setLoading(true);
+    try {
+      if (STREAM) await runStream(query);
+      else await runNonStream(query);
     } finally {
       setLoading(false);
     }
   };
 
   const openDoc = (d) => setPdf({ url: `${API}/document/${d.id}`, title: d.title });
+
+  // Render de un mensaje en streaming: parte el texto por [[FIG:ref]] e intercala figuras.
+  const renderStreamed = (m) => {
+    let text = m.text || '';
+    const nodes = [];
+    const re = /\[\[FIG:([^\]]+)\]\]/g;
+    let lastIndex = 0, match, k = 0;
+    while ((match = re.exec(text)) !== null) {
+      const chunk = text.slice(lastIndex, match.index);
+      if (chunk.trim()) nodes.push(
+        <div key={`t${k}`} className="bg-[#1F1F1F] border border-[#EDEFFE]/20 text-[#EDEFFE] px-3 py-2 font-sans text-sm whitespace-pre-wrap leading-relaxed">{chunk.trim()}</div>
+      );
+      const fig = m.figures?.[match[1]];
+      if (fig) nodes.push(
+        <figure key={`f${k}`} className="border-2 border-[#EDEFFE]/30 bg-[#1F1F1F]">
+          <img src={`${API}${fig.url}`} alt={fig.label || match[1]} className="w-full max-h-72 object-contain bg-black" />
+          {(fig.caption || fig.label) && (
+            <figcaption className="px-2 py-1 text-[10px] text-[#EDEFFE]/50 border-t border-[#EDEFFE]/20">
+              {fig.label ? `${fig.label}: ` : ''}{fig.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+      lastIndex = re.lastIndex;
+      k++;
+    }
+    let tail = text.slice(lastIndex);
+    if (m.streaming) tail = tail.replace(/\[\[FIG:[^\]]*$/, ''); // ocultar marcador parcial
+    if (tail.trim() || nodes.length === 0) nodes.push(
+      <div key="tail" className="bg-[#1F1F1F] border border-[#EDEFFE]/20 text-[#EDEFFE] px-3 py-2 font-sans text-sm whitespace-pre-wrap leading-relaxed">
+        {tail}{m.streaming && <span className="inline-block w-1.5 h-4 -mb-0.5 ml-0.5 bg-[#EDEFFE]/70 animate-pulse" />}
+      </div>
+    );
+    return nodes;
+  };
 
   // Modal de PDF — compartido entre la pantalla de selección y el chat
   const pdfModal = pdf && (
@@ -220,7 +331,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
               </div>
             ) : (
               <div className="max-w-[85%] flex flex-col gap-2">
-                {m.parts.map((p, j) =>
+                {m.text !== undefined ? renderStreamed(m) : m.parts.map((p, j) =>
                   p.type === 'figure' ? (
                     <figure key={j} className="border-2 border-[#EDEFFE]/30 bg-[#1F1F1F]">
                       <img src={`${API}${p.url}`} alt={p.label || p.ref} className="w-full max-h-72 object-contain bg-black" />
@@ -272,7 +383,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
           </div>
         )}
 
-        {loading && (
+        {loading && !(messages[messages.length - 1]?.role === 'assistant' && messages[messages.length - 1]?.streaming !== undefined) && (
           <div className="flex justify-start">
             <div className="bg-[#1F1F1F] border border-[#EDEFFE]/20 px-3 py-2 flex items-center gap-2 text-[#EDEFFE]/60">
               <Loader2 className="w-4 h-4 animate-spin" />
