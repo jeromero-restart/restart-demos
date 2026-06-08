@@ -6,7 +6,7 @@ const SAMPLE_FILES = [
   { id: 2, name: 'Jon Doe', subtitle: 'Planilla con errores', file: 'planilla-jon-doe-errores.pdf' },
 ];
 
-export default function UploadView({ apiUrl, onSuccess }) {
+export default function UploadView({ apiUrl, onSuccess, onExpandToggle }) {
   const API = apiUrl;
   const [file, setFile]               = useState(null);
   const [dragging, setDragging]       = useState(false);
@@ -35,8 +35,10 @@ export default function UploadView({ apiUrl, onSuccess }) {
   };
 
   const toggleDb = () => {
-    if (!showDb) fetchPatients();
-    setShowDb(v => !v);
+    const next = !showDb;
+    if (next) { fetchPatients(); clearPreview(); }
+    setShowDb(next);
+    onExpandToggle?.(next);
   };
 
   const handleFile = (f) => {
@@ -75,6 +77,8 @@ export default function UploadView({ apiUrl, onSuccess }) {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setPreviewUrl(URL.createObjectURL(blob));
       setPreviewName(sample.name);
+      setShowDb(false);
+      onExpandToggle?.(true);
     } catch (e) {
       setError(e.message);
     }
@@ -85,6 +89,7 @@ export default function UploadView({ apiUrl, onSuccess }) {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
     setPreviewName(null);
+    onExpandToggle?.(false);
   };
 
   const handleSubmit = async () => {

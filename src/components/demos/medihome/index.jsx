@@ -32,7 +32,7 @@ export default function MedihomeDemo({ apiUrl, onExpandToggle }) {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        {view === 'upload'  && <UploadView apiUrl={apiUrl} onSuccess={goToResults} />}
+        {view === 'upload'  && <UploadView apiUrl={apiUrl} onSuccess={goToResults} onExpandToggle={onExpandToggle} />}
         {view === 'results' && <ResultsView apiUrl={apiUrl} onDetail={goToDetail} />}
         {view === 'detail'  && <DetailView apiUrl={apiUrl} id={selectedId} onBack={goToResults} onExpandToggle={onExpandToggle} />}
       </div>
