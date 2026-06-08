@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw, Volume2, Square, Users, Tag, Plus, Trash2 } from 'lucide-react';
+import { useConversation } from '@elevenlabs/react';
+import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw, Volume2, Square, Users, Tag, Plus, Trash2, Mic, MicOff } from 'lucide-react';
 
 const TEMPERATURE_LABELS = {
   low:    { max: 0.35, label: 'Conservador', desc: 'Respuestas predecibles y consistentes' },
@@ -177,6 +178,15 @@ export default function AgentesDemo({ apiUrl }) {
   const [callStatus, setCallStatus] = useState(CALL_STATUS.IDLE);
   const [callError, setCallError]   = useState('');
 
+  // Test por navegador (micrófono)
+  const [webStatus, setWebStatus] = useState('idle'); // idle | connecting | active
+  const [webError, setWebError]   = useState('');
+  const conversation = useConversation({
+    onConnect:    () => setWebStatus('active'),
+    onDisconnect: () => setWebStatus('idle'),
+    onError:      (e) => { setWebError(typeof e === 'string' ? e : (e?.message || 'Error de conexión')); setWebStatus('idle'); },
+  });
+
   // Leads
   const [leads, setLeads]           = useState([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
@@ -268,6 +278,52 @@ export default function AgentesDemo({ apiUrl }) {
   const removeField = (i) => setDataCollection(d => d.filter((_, idx) => idx !== i));
   const updateField = (i, key, val) => setDataCollection(d => d.map((f, idx) => idx === i ? { ...f, [key]: val } : f));
 
+  // Config compartida entre la llamada telefónica y el test por navegador
+  const buildAgentPayload = () => ({
+    prompt,
+    first_message: firstMessage,
+    temperature,
+    voice_id: selectedVoice?.id,
+    data_collection: dataCollection
+      .filter(f => f.identifier.trim())
+      .map(f => ({
+        identifier: f.identifier.trim(),
+        type: f.type || 'string',
+        description: f.description || '',
+        ...(f.enum && f.enum.length ? { enum: f.enum } : {}),
+      })),
+  });
+
+  // ── Test por navegador (micrófono) ──
+  const startWebSession = async () => {
+    if (!selectedVoice || webStatus === 'connecting') return;
+    setWebError('');
+    setWebStatus('connecting');
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const res = await fetch(`${apiUrl}/api/web-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildAgentPayload()),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'No se pudo iniciar la sesión');
+      }
+      const { signed_url } = await res.json();
+      if (!signed_url) throw new Error('Sesión no disponible');
+      await conversation.startSession({ signedUrl: signed_url });
+    } catch (e) {
+      setWebError(e.name === 'NotAllowedError' ? 'Permiso de micrófono denegado' : e.message);
+      setWebStatus('idle');
+    }
+  };
+
+  const endWebSession = async () => {
+    try { await conversation.endSession(); } catch (_) {}
+    setWebStatus('idle');
+  };
+
   const handleCall = async () => {
     if (!phone.trim() || !selectedVoice) return;
     setCallStatus(CALL_STATUS.CONFIGURING);
@@ -276,21 +332,7 @@ export default function AgentesDemo({ apiUrl }) {
       const res = await fetch(`${apiUrl}/api/call`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: phone.trim(),
-          prompt,
-          first_message: firstMessage,
-          temperature,
-          voice_id: selectedVoice.id,
-          data_collection: dataCollection
-            .filter(f => f.identifier.trim())
-            .map(f => ({
-              identifier: f.identifier.trim(),
-              type: f.type || 'string',
-              description: f.description || '',
-              ...(f.enum && f.enum.length ? { enum: f.enum } : {}),
-            })),
-        }),
+        body: JSON.stringify({ phone: phone.trim(), ...buildAgentPayload() }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -820,6 +862,57 @@ export default function AgentesDemo({ apiUrl }) {
                 Reintentar
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-1">
+          <div className="flex-1 h-px bg-[#EDEFFE]/15" />
+          <span className="text-[10px] font-bold uppercase text-[#EDEFFE]/40">o probá por navegador</span>
+          <div className="flex-1 h-px bg-[#EDEFFE]/15" />
+        </div>
+
+        {/* Web test (microphone) */}
+        {webStatus === 'active' ? (
+          <div className="flex flex-col gap-3 border-2 border-green-400 p-4 bg-green-400/5">
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-400" />
+              </span>
+              <div className="flex-1">
+                <p className="font-bold text-sm text-green-400 uppercase">En conversación</p>
+                <p className="text-[11px] text-[#EDEFFE]/60 font-sans">
+                  {conversation.isSpeaking ? 'El agente está hablando…' : 'Escuchando tu micrófono…'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={endWebSession}
+              className="flex items-center justify-center gap-2 py-3 px-6 font-bold text-sm uppercase border-2 border-red-400 text-red-400 hover:bg-red-400 hover:text-[#1F1F1F] transition-all"
+            >
+              <MicOff className="w-4 h-4" /> Finalizar
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={startWebSession}
+            disabled={!selectedVoice || webStatus === 'connecting'}
+            className={`flex items-center justify-center gap-3 py-4 px-6 font-bold text-base uppercase border-2 transition-all ${
+              selectedVoice && webStatus === 'idle'
+                ? 'border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF]'
+                : 'bg-[#1F1F1F] text-[#EDEFFE]/30 border-[#EDEFFE]/20 cursor-not-allowed'
+            }`}
+          >
+            {webStatus === 'connecting'
+              ? <><Loader className="w-5 h-5 animate-spin" /> Conectando…</>
+              : <><Mic className="w-5 h-5" /> Hablar con el agente</>}
+          </button>
+        )}
+        {webError && (
+          <div className="flex items-start gap-2 border-2 border-red-400 p-2.5 bg-red-400/10">
+            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-[#EDEFFE]/70 font-sans">{webError}</p>
           </div>
         )}
 
