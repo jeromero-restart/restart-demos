@@ -73,10 +73,33 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
     }
   };
 
+  const openDoc = (d) => setPdf({ url: `${API}/document/${d.id}`, title: d.title });
+
+  // Modal de PDF — compartido entre la pantalla de selección y el chat
+  const pdfModal = pdf && (
+    <div className="absolute inset-0 z-50 bg-black/80 flex flex-col p-3 md:p-6" onClick={() => setPdf(null)}>
+      <div className="flex items-center justify-between mb-2" onClick={(e) => e.stopPropagation()}>
+        <span className="font-display text-base uppercase tracking-widest text-[#EDEFFE] truncate">{pdf.title}</span>
+        <button
+          onClick={() => setPdf(null)}
+          className="flex items-center gap-1 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors"
+        >
+          <X className="w-4 h-4" /> Cerrar
+        </button>
+      </div>
+      <iframe
+        src={pdf.url}
+        title={pdf.title}
+        className="flex-1 w-full bg-white border-2 border-[#EDEFFE]"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+
   // ----- Pantalla de selección de rol -----
   if (!role) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-6 p-6 font-sans">
+      <div className="h-full flex flex-col items-center justify-center gap-6 p-6 font-sans relative overflow-y-auto">
         <div className="text-center">
           <p className="font-display text-3xl uppercase text-[#EDEFFE] tracking-widest">Elegí tu perfil</p>
           <p className="font-sans text-xs text-[#EDEFFE]/50 mt-2 max-w-sm">
@@ -96,11 +119,37 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
             </button>
           ))}
         </div>
+
+        {/* Base de conocimiento — documentos cargados, clickeables para previsualizar */}
         {docs.length > 0 && (
-          <p className="font-sans text-[11px] text-[#EDEFFE]/40">
-            {docs.length} documento{docs.length !== 1 ? 's' : ''} cargado{docs.length !== 1 ? 's' : ''} en la base de conocimiento
-          </p>
+          <div className="w-full max-w-lg">
+            <p className="font-display text-sm uppercase tracking-widest text-[#EDEFFE]/60 mb-2 text-center">
+              /// Base de conocimiento · {docs.length} documento{docs.length !== 1 ? 's' : ''}
+            </p>
+            <p className="font-sans text-[10px] text-[#EDEFFE]/40 text-center mb-3">
+              Hacé click en un documento para previsualizarlo
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {docs.map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => openDoc(d)}
+                  title="Previsualizar PDF"
+                  className="flex items-center gap-2 border border-[#EDEFFE]/30 bg-[#0000FF]/10 px-3 py-2 text-left hover:border-[#EDEFFE] hover:bg-[#EDEFFE]/10 transition-colors group"
+                >
+                  <FileText className="w-4 h-4 text-[#EDEFFE]/50 group-hover:text-[#EDEFFE] flex-shrink-0" />
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-sans text-xs text-[#EDEFFE]/80 group-hover:text-[#EDEFFE] truncate">{d.title}</span>
+                    {d.pages > 0 && <span className="block font-sans text-[10px] text-[#EDEFFE]/40">{d.pages} pág.</span>}
+                  </span>
+                  <ChevronRight className="w-3 h-3 text-[#EDEFFE]/30 group-hover:text-[#EDEFFE]/70 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          </div>
         )}
+
+        {pdfModal}
       </div>
     );
   }
@@ -143,10 +192,17 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
           ) : (
             <ul className="flex flex-col gap-1">
               {docs.map((d) => (
-                <li key={d.id} className="flex items-center gap-2 font-sans text-xs text-[#EDEFFE]/80">
-                  <FileText className="w-3 h-3 text-[#EDEFFE]/50 flex-shrink-0" />
-                  <span className="flex-1 truncate">{d.title}</span>
-                  {d.pages > 0 && <span className="text-[#EDEFFE]/40">{d.pages} pág.</span>}
+                <li key={d.id}>
+                  <button
+                    onClick={() => openDoc(d)}
+                    title="Previsualizar PDF"
+                    className="w-full flex items-center gap-2 font-sans text-xs text-[#EDEFFE]/80 px-2 py-1 -mx-2 hover:bg-[#EDEFFE]/10 hover:text-[#EDEFFE] transition-colors text-left group"
+                  >
+                    <FileText className="w-3 h-3 text-[#EDEFFE]/50 group-hover:text-[#EDEFFE] flex-shrink-0" />
+                    <span className="flex-1 truncate">{d.title}</span>
+                    {d.pages > 0 && <span className="text-[#EDEFFE]/40">{d.pages} pág.</span>}
+                    <ChevronRight className="w-3 h-3 text-[#EDEFFE]/30 group-hover:text-[#EDEFFE]/70 flex-shrink-0" />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -249,25 +305,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
       </div>
 
       {/* Modal de PDF */}
-      {pdf && (
-        <div className="absolute inset-0 z-50 bg-black/80 flex flex-col p-3 md:p-6" onClick={() => setPdf(null)}>
-          <div className="flex items-center justify-between mb-2" onClick={(e) => e.stopPropagation()}>
-            <span className="font-display text-base uppercase tracking-widest text-[#EDEFFE] truncate">{pdf.title}</span>
-            <button
-              onClick={() => setPdf(null)}
-              className="flex items-center gap-1 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors"
-            >
-              <X className="w-4 h-4" /> Cerrar
-            </button>
-          </div>
-          <iframe
-            src={pdf.url}
-            title={pdf.title}
-            className="flex-1 w-full bg-white border-2 border-[#EDEFFE]"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+      {pdfModal}
     </div>
   );
 }
