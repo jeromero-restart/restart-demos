@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Upload, FileText, Loader2, Zap } from 'lucide-react';
 
 const SAMPLE_FILES = [
-  { id: 1, name: 'Planilla 1', subtitle: 'Ejemplo de carga', file: 'planilla-enero.pdf' },
-  { id: 2, name: 'Planilla 2', subtitle: 'Ejemplo de carga', file: 'planilla-febrero.pdf' },
-  { id: 3, name: 'Planilla 3', subtitle: 'Ejemplo de carga', file: 'planilla-marzo.pdf' },
+  { id: 1, name: 'Juan Pérez', subtitle: 'Planilla sin errores', file: 'planilla-juan-perez.pdf' },
+  { id: 2, name: 'Jon Doe', subtitle: 'Planilla con errores', file: 'planilla-jon-doe-errores.pdf' },
 ];
 
 export default function UploadView({ apiUrl, onSuccess }) {
