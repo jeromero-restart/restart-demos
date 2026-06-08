@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw, Volume2, Square, Users, Tag } from 'lucide-react';
+import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw, Volume2, Square, Users, Tag, Plus, Trash2 } from 'lucide-react';
 
 const TEMPERATURE_LABELS = {
   low:    { max: 0.35, label: 'Conservador', desc: 'Respuestas predecibles y consistentes' },
@@ -94,6 +94,14 @@ Reglas importantes:
     name: 'Calificador de Leads',
     description: 'Captura datos de potenciales clientes y califica el interés',
     temperature: 0.45,
+    data_collection: [
+      { identifier: 'nombre',      type: 'string', description: 'Nombre completo del potencial cliente.' },
+      { identifier: 'empresa',     type: 'string', description: 'Empresa u organización del cliente, si la menciona.' },
+      { identifier: 'necesidad',   type: 'string', description: 'Necesidad o problema principal que quiere resolver.' },
+      { identifier: 'presupuesto', type: 'string', description: 'Presupuesto aproximado disponible que menciona el cliente.' },
+      { identifier: 'urgencia',    type: 'string', description: 'Nivel de urgencia para avanzar.', enum: ['Inmediata', 'Próximos 3 meses', 'Explorando'] },
+      { identifier: 'email',       type: 'string', description: 'Email de contacto para el seguimiento.' },
+    ],
     first_message: '¡Hola! Soy Valentina, asesora comercial. Me comunico para contarte sobre nuestros servicios. ¿Tenés un momento?',
     prompt: `Sos un agente de calificación de leads comerciales. Tu objetivo es recopilar información clave del potencial cliente de forma natural y conversacional, sin que parezca un interrogatorio.
 
@@ -154,6 +162,7 @@ export default function AgentesDemo({ apiUrl }) {
   const [temperature, setTemperature]   = useState(0.7);
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [activePreset, setActivePreset]   = useState(null);
+  const [dataCollection, setDataCollection] = useState([]);
   const [playingId, setPlayingId]         = useState(null);
   const audioRef = useRef(null);
 
@@ -183,6 +192,7 @@ export default function AgentesDemo({ apiUrl }) {
         setPrompt(agentData.prompt || '');
         setFirstMessage(agentData.first_message || '');
         setTemperature(agentData.temperature ?? 0.7);
+        setDataCollection(agentData.data_collection || []);
         const list = voicesData.voices || [];
         setVoices(list);
         const current = list.find(v => v.id === agentData.voice_id) || list[0] || null;
@@ -251,7 +261,12 @@ export default function AgentesDemo({ apiUrl }) {
     setPrompt(preset.prompt);
     setFirstMessage(preset.first_message);
     setTemperature(preset.temperature);
+    setDataCollection(preset.data_collection ? preset.data_collection.map(f => ({ ...f })) : []);
   };
+
+  const addField    = () => setDataCollection(d => [...d, { identifier: '', type: 'string', description: '' }]);
+  const removeField = (i) => setDataCollection(d => d.filter((_, idx) => idx !== i));
+  const updateField = (i, key, val) => setDataCollection(d => d.map((f, idx) => idx === i ? { ...f, [key]: val } : f));
 
   const handleCall = async () => {
     if (!phone.trim() || !selectedVoice) return;
@@ -267,6 +282,14 @@ export default function AgentesDemo({ apiUrl }) {
           first_message: firstMessage,
           temperature,
           voice_id: selectedVoice.id,
+          data_collection: dataCollection
+            .filter(f => f.identifier.trim())
+            .map(f => ({
+              identifier: f.identifier.trim(),
+              type: f.type || 'string',
+              description: f.description || '',
+              ...(f.enum && f.enum.length ? { enum: f.enum } : {}),
+            })),
         }),
       });
       if (!res.ok) {
@@ -577,6 +600,75 @@ export default function AgentesDemo({ apiUrl }) {
           </p>
         </div>
 
+        {/* Data collection */}
+        <div>
+          <div className="flex justify-between items-baseline mb-2">
+            <label className="font-display text-lg uppercase">// DATA COLLECTION</label>
+            <button
+              onClick={addField}
+              className="flex items-center gap-1 text-[10px] font-bold uppercase text-[#EDEFFE]/60 hover:text-[#EDEFFE] border border-[#EDEFFE]/30 hover:border-[#EDEFFE] px-2 py-1 transition-colors"
+            >
+              <Plus className="w-3 h-3" /> Campo
+            </button>
+          </div>
+          <p className="text-[10px] text-[#EDEFFE]/40 mb-2 font-sans">
+            Datos que el agente extraerá de cada llamada. Se sincronizan con ElevenLabs al llamar.
+          </p>
+
+          {dataCollection.length === 0 && (
+            <p className="text-[11px] text-[#EDEFFE]/30 font-sans italic border border-dashed border-[#EDEFFE]/20 p-3 text-center">
+              Sin campos. El agente no capturará datos estructurados.
+            </p>
+          )}
+
+          <div className="flex flex-col gap-2">
+            {dataCollection.map((f, i) => (
+              <div key={i} className="border border-[#EDEFFE]/20 bg-[#0000FF]/10 p-2 flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Tag className="w-3 h-3 text-[#EDEFFE]/40 flex-shrink-0" />
+                  <input
+                    type="text"
+                    value={f.identifier}
+                    onChange={e => updateField(i, 'identifier', e.target.value)}
+                    placeholder="identificador (ej. email)"
+                    className="flex-1 bg-[#0000FF]/20 border border-[#EDEFFE]/30 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-mono text-xs px-2 py-1 focus:outline-none"
+                  />
+                  <select
+                    value={f.type}
+                    onChange={e => updateField(i, 'type', e.target.value)}
+                    className="bg-[#1F1F1F] border border-[#EDEFFE]/30 focus:border-[#EDEFFE] text-[#EDEFFE] text-[11px] px-1.5 py-1 focus:outline-none"
+                  >
+                    <option value="string">string</option>
+                    <option value="number">number</option>
+                    <option value="boolean">boolean</option>
+                  </select>
+                  <button
+                    onClick={() => removeField(i)}
+                    className="text-[#EDEFFE]/40 hover:text-red-400 transition-colors p-1"
+                    title="Quitar campo"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={f.description}
+                  onChange={e => updateField(i, 'description', e.target.value)}
+                  placeholder="Instrucción de extracción para el modelo..."
+                  className="w-full bg-[#0000FF]/20 border border-[#EDEFFE]/20 focus:border-[#EDEFFE]/60 text-[#EDEFFE]/80 placeholder-[#EDEFFE]/30 font-sans text-[11px] px-2 py-1 focus:outline-none"
+                />
+                {f.enum && f.enum.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pl-1">
+                    {f.enum.map((opt, oi) => (
+                      <span key={oi} className="text-[9px] font-mono text-[#EDEFFE]/50 border border-[#EDEFFE]/20 px-1 py-0.5">{opt}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Temperature */}
         <div>
           <div className="flex justify-between items-baseline mb-2">
@@ -669,6 +761,7 @@ export default function AgentesDemo({ apiUrl }) {
           <Row label="Temperatura" value={`${tempInfo.label} (${temperature.toFixed(2)})`} />
           <Row label="Idioma" value="Español" />
           <Row label="Prompt" value={`${prompt.length} caracteres`} />
+          <Row label="Data collection" value={`${dataCollection.filter(f => f.identifier.trim()).length} campos`} />
         </div>
 
         {/* Phone input */}
