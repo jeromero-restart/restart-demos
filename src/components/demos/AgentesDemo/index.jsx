@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useConversation } from '@elevenlabs/react';
+import { Conversation } from '@elevenlabs/client';
 import { Phone, Loader, AlertCircle, CheckCircle, Zap, Clock, ChevronDown, ChevronUp, RefreshCw, Volume2, Square, Users, Tag, Plus, Trash2, Mic, MicOff } from 'lucide-react';
 
 const TEMPERATURE_LABELS = {
@@ -181,11 +181,11 @@ export default function AgentesDemo({ apiUrl }) {
   // Test por navegador (micrófono)
   const [webStatus, setWebStatus] = useState('idle'); // idle | connecting | active
   const [webError, setWebError]   = useState('');
-  const conversation = useConversation({
-    onConnect:    () => setWebStatus('active'),
-    onDisconnect: () => setWebStatus('idle'),
-    onError:      (e) => { setWebError(typeof e === 'string' ? e : (e?.message || 'Error de conexión')); setWebStatus('idle'); },
-  });
+  const [agentMode, setAgentMode] = useState('listening'); // speaking | listening
+  const convRef = useRef(null);
+
+  // cortar la sesión si se desmonta el componente
+  useEffect(() => () => { try { convRef.current?.endSession?.(); } catch (_) {} }, []);
 
   // Leads
   const [leads, setLeads]           = useState([]);
@@ -296,7 +296,7 @@ export default function AgentesDemo({ apiUrl }) {
 
   // ── Test por navegador (micrófono) ──
   const startWebSession = async () => {
-    if (!selectedVoice || webStatus === 'connecting') return;
+    if (!selectedVoice || webStatus !== 'idle') return;
     setWebError('');
     setWebStatus('connecting');
     try {
@@ -312,7 +312,13 @@ export default function AgentesDemo({ apiUrl }) {
       }
       const { signed_url } = await res.json();
       if (!signed_url) throw new Error('Sesión no disponible');
-      await conversation.startSession({ signedUrl: signed_url });
+      convRef.current = await Conversation.startSession({
+        signedUrl: signed_url,
+        onConnect:    () => setWebStatus('active'),
+        onDisconnect: () => { setWebStatus('idle'); convRef.current = null; },
+        onModeChange: ({ mode }) => setAgentMode(mode),
+        onError:      (msg) => setWebError(typeof msg === 'string' ? msg : 'Error de conexión'),
+      });
     } catch (e) {
       setWebError(e.name === 'NotAllowedError' ? 'Permiso de micrófono denegado' : e.message);
       setWebStatus('idle');
@@ -320,7 +326,8 @@ export default function AgentesDemo({ apiUrl }) {
   };
 
   const endWebSession = async () => {
-    try { await conversation.endSession(); } catch (_) {}
+    try { await convRef.current?.endSession(); } catch (_) {}
+    convRef.current = null;
     setWebStatus('idle');
   };
 
@@ -883,7 +890,7 @@ export default function AgentesDemo({ apiUrl }) {
               <div className="flex-1">
                 <p className="font-bold text-sm text-green-400 uppercase">En conversación</p>
                 <p className="text-[11px] text-[#EDEFFE]/60 font-sans">
-                  {conversation.isSpeaking ? 'El agente está hablando…' : 'Escuchando tu micrófono…'}
+                  {agentMode === 'speaking' ? 'El agente está hablando…' : 'Escuchando tu micrófono…'}
                 </p>
               </div>
             </div>
