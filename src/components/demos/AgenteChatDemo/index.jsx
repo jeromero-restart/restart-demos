@@ -50,7 +50,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
   };
 
   // Flag para rollback inmediato: poné STREAM=false y vuelve al comportamiento previo.
-  const STREAM = true;
+  const STREAM = false;
 
   const patchLast = (updater) =>
     setMessages((m) => {
