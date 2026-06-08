@@ -338,7 +338,7 @@ export default function AgentesDemo({ apiUrl }) {
 
       {/* ── Tab bar ────────────────────────────────────────────────────────── */}
       <div className="flex border-b-2 border-[#EDEFFE] flex-shrink-0">
-        {[['config', 'Configurar'], ['leads', 'Leads'], ['history', 'Historial']].map(([key, label]) => (
+        {[['config', 'Configurar'], ['leads', 'Repositorios de datos'], ['history', 'Historial']].map(([key, label]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -356,27 +356,28 @@ export default function AgentesDemo({ apiUrl }) {
       {/* ── Leads panel ────────────────────────────────────────────────────── */}
       {tab === 'leads' && (
         <div className="flex-1 overflow-y-auto p-5">
-          <div className="flex justify-between items-center mb-4">
-            <span className="font-display text-lg uppercase">// Leads Calificados</span>
+          <div className="flex justify-between items-center mb-1">
+            <span className="font-display text-lg uppercase">// Repositorios de datos</span>
             <button onClick={loadLeads} className="flex items-center gap-1.5 text-[#EDEFFE]/50 hover:text-[#EDEFFE] transition-colors text-xs font-bold uppercase">
               <RefreshCw className={`w-3.5 h-3.5 ${leadsLoading ? 'animate-spin' : ''}`} /> Actualizar
             </button>
           </div>
+          <p className="text-[11px] text-[#EDEFFE]/40 font-sans mb-4">Datos capturados en la última llamada registrada.</p>
 
           {leadsLoading && (
             <div className="flex items-center gap-2 text-[#EDEFFE]/50 text-sm">
-              <Loader className="w-4 h-4 animate-spin" /> Cargando leads...
+              <Loader className="w-4 h-4 animate-spin" /> Cargando datos...
             </div>
           )}
 
           {!leadsLoading && leads.length === 0 && (
             <div className="text-[#EDEFFE]/40 text-sm font-sans text-center py-16">
-              No hay leads registrados aún. Realizá llamadas con el preset "Calificador de Leads".
+              No hay registros aún. Realizá una llamada con el preset "Calificador de Leads".
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {leads.map(lead => {
+            {[...leads].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 1).map(lead => {
               const dc = lead.data_collection || {};
               const fields = Object.entries(dc);
               return (
@@ -603,7 +604,7 @@ export default function AgentesDemo({ apiUrl }) {
         {/* Data collection */}
         <div>
           <div className="flex justify-between items-baseline mb-2">
-            <label className="font-display text-lg uppercase">// DATA COLLECTION</label>
+            <label className="font-display text-lg uppercase">// Repositorios de datos</label>
             <button
               onClick={addField}
               className="flex items-center gap-1 text-[10px] font-bold uppercase text-[#EDEFFE]/60 hover:text-[#EDEFFE] border border-[#EDEFFE]/30 hover:border-[#EDEFFE] px-2 py-1 transition-colors"
@@ -612,7 +613,7 @@ export default function AgentesDemo({ apiUrl }) {
             </button>
           </div>
           <p className="text-[10px] text-[#EDEFFE]/40 mb-2 font-sans">
-            Datos que el agente extraerá de cada llamada. Se sincronizan con ElevenLabs al llamar.
+            Datos que el agente extraerá automáticamente de cada llamada.
           </p>
 
           {dataCollection.length === 0 && (
