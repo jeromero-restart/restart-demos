@@ -19,6 +19,11 @@ const TRIGGER_LABELS = {
   direction: (p) => `Ingreso desde el ${p.direction === 'N' ? 'Norte' : p.direction === 'S' ? 'Sur' : p.direction === 'E' ? 'Este' : 'Oeste'}`,
 };
 
+// El video MJPEG llega con algo de retraso (buffer del backend + decode del navegador),
+// mientras que las alertas SSE son instantáneas. Retrasamos la alerta este tanto para
+// que aparezca cuando el evento se ve en pantalla (no antes). Ajustable.
+const EVENT_DISPLAY_DELAY_MS = 1200;
+
 export default function LiveCamDemo({ apiUrl }) {
   const [step, setStep] = useState('cameras');
   const [cameras, setCameras] = useState([]);
@@ -142,15 +147,20 @@ export default function LiveCamDemo({ apiUrl }) {
     const es = new EventSource(
       `${apiUrl}/api/cameras/${selectedCamera.id}/live/events?area_id=${areaId}`
     );
+    const timers = [];
     es.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
         if (data.type === 'event') {
-          setEvents(prev => [{ ...data, _ts: Date.now() }, ...prev].slice(0, 40));
+          // Delay the alert so it lands in sync with the (buffered) video instead of ahead of it.
+          const t = setTimeout(() => {
+            setEvents(prev => [{ ...data, _ts: Date.now() }, ...prev].slice(0, 40));
+          }, EVENT_DISPLAY_DELAY_MS);
+          timers.push(t);
         }
       } catch {}
     };
-    return () => es.close();
+    return () => { es.close(); timers.forEach(clearTimeout); };
   }, [step, areaId, selectedCamera, apiUrl]);
 
   const stopLive = async () => {
