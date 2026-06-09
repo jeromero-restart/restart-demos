@@ -3,7 +3,7 @@ import { Upload, FileText, Loader2, Zap, Database, X, ChevronRight, Users } from
 
 const SAMPLE_FILES = [
   { id: 1, name: 'Juan Pérez', subtitle: 'Planilla sin errores', file: 'planilla-juan-perez.pdf' },
-  { id: 2, name: 'Jon Doe', subtitle: 'Planilla con errores', file: 'planilla-jon-doe-errores.pdf' },
+  { id: 2, name: 'Raquel Pía', subtitle: 'Planilla con errores', file: 'planilla-raquel-pia.pdf' },
 ];
 
 export default function UploadView({ apiUrl, onSuccess, onExpandToggle }) {
