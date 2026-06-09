@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 const GUEST_SESSION_KEY = 'restart_guest_session';
+const USER_SESSION_KEY = 'restart_user_session';
+const USER_SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
 const USERS_API = import.meta.env.VITE_USERS_API_URL || 'http://localhost:3001';
 const API_KEY = import.meta.env.VITE_USERS_API_KEY || 'changeme';
 
@@ -30,15 +32,30 @@ export const usersApi = {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
-      const saved = sessionStorage.getItem(GUEST_SESSION_KEY);
-      if (saved) {
-        const guest = JSON.parse(saved);
+      // Sesión de invitado (sessionStorage, vida corta)
+      const savedGuest = sessionStorage.getItem(GUEST_SESSION_KEY);
+      if (savedGuest) {
+        const guest = JSON.parse(savedGuest);
         if (Date.now() < guest.expiresAt) return guest;
         sessionStorage.removeItem(GUEST_SESSION_KEY);
+      }
+      // Sesión de Google (localStorage, persiste recargas y reinicios del navegador)
+      const savedUser = localStorage.getItem(USER_SESSION_KEY);
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        if (!u.expiresAt || Date.now() < u.expiresAt) return u;
+        localStorage.removeItem(USER_SESSION_KEY);
       }
     } catch { /* ignore */ }
     return null;
   });
+
+  // Persiste la sesión de Google para que sobreviva recargas.
+  const persistGoogle = (u) => {
+    const withExp = { ...u, expiresAt: Date.now() + USER_SESSION_TTL_MS };
+    try { localStorage.setItem(USER_SESSION_KEY, JSON.stringify(withExp)); } catch { /* ignore */ }
+    setUser(withExp);
+  };
 
   // Login con Google — verifica si el email está autorizado
   const login = async (googleProfile) => {
@@ -46,12 +63,12 @@ export function AuthProvider({ children }) {
       const users = await usersApi.list();
       const found = users.find(u => u.email === googleProfile.email);
       if (!found) return { error: 'not_authorized' };
-      setUser({ type: 'google', role: found.role, ...googleProfile });
+      persistGoogle({ type: 'google', role: found.role, ...googleProfile });
       return { ok: true };
     } catch {
       // Si la users-api no está disponible, deja pasar (modo dev sin API)
       if (import.meta.env.DEV) {
-        setUser({ type: 'google', role: 'admin', ...googleProfile });
+        persistGoogle({ type: 'google', role: 'admin', ...googleProfile });
         return { ok: true };
       }
       return { error: 'api_error' };
@@ -59,7 +76,7 @@ export function AuthProvider({ children }) {
   };
 
   const loginAsDev = () => {
-    setUser({ type: 'google', role: 'admin', name: 'Dev User', email: `dev@${import.meta.env.VITE_ALLOWED_DOMAIN || 'restart-ai.com'}`, picture: null });
+    persistGoogle({ type: 'google', role: 'admin', name: 'Dev User', email: `dev@${import.meta.env.VITE_ALLOWED_DOMAIN || 'restart-ai.com'}`, picture: null });
   };
 
   const loginAsGuest = (tokenData) => {
@@ -70,6 +87,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     sessionStorage.removeItem(GUEST_SESSION_KEY);
+    localStorage.removeItem(USER_SESSION_KEY);
     setUser(null);
   };
 
