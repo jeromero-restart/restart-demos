@@ -1,37 +1,5 @@
 export const demosData = [
   {
-    id: 1,
-    apiUrl: import.meta.env.VITE_PERFILADOR_API_URL || 'http://localhost:8004',
-    title: "PERFILADOR DE CLIENTE EN TIENDA (Vision AI)",
-    vertical: "Retail",
-    tech: "Vision AI",
-    description: "Analiza imágenes en tienda para estimar perfil demográfico y patrones de comportamiento de los visitantes, generando insights accionables para marketing, layout y estrategia comercial.",
-    objective: "Mejorar segmentación, aumentar conversión de campañas y elevar ventas en locales intervenidos.",
-    ascii: "01001100 01101111",
-    impactMetrics: [
-      "↑ +18–32% conversión en campañas segmentadas",
-      "↑ +12–20% ticket promedio por tienda",
-      "↑ +25% uso de insights en decisiones comerciales",
-      "↑ +10–18% ventas en locales intervenidos"
-    ]
-  },
-  {
-    id: 2,
-    apiUrl: import.meta.env.VITE_AGENTES_API_URL || 'http://localhost:8002',
-    title: "AGENTES TELEFÓNICOS AUTÓNOMOS",
-    vertical: "Todas",
-    tech: "Voice AI",
-    description: "Agentes de IA que ejecutan campañas de contacto telefónico de forma autónoma, con lenguaje natural, alta concurrencia y una experiencia de voz más ágil y consistente.",
-    objective: "Reducir costo por contacto, aumentar la tasa de contacto efectivo y mejorar la conversión de campañas.",
-    ascii: "11101010 00111011",
-    impactMetrics: [
-      "↓ -35–60% costo por contacto",
-      "↑ +20–45% tasa de contacto efectivo",
-      "↑ +15–30% conversión en campañas",
-      "↑ +70% automatización de llamadas salientes"
-    ]
-  },
-  {
     id: 3,
     apiUrl: import.meta.env.VITE_MEDIHOME_API_URL || 'http://localhost:8000',
     title: "LECTURA INTELIGENTE DE PLANILLAS MÉDICAS",
@@ -97,6 +65,38 @@ export const demosData = [
       "↑ +80% cobertura de vigilancia automatizada",
       "↓ -45% falsos positivos vs. detección manual",
       "↑ +3x capacidad de monitoreo simultáneo"
+    ]
+  },
+  {
+    id: 2,
+    apiUrl: import.meta.env.VITE_AGENTES_API_URL || 'http://localhost:8002',
+    title: "AGENTES TELEFÓNICOS AUTÓNOMOS",
+    vertical: "Todas",
+    tech: "Voice AI",
+    description: "Agentes de IA que ejecutan campañas de contacto telefónico de forma autónoma, con lenguaje natural, alta concurrencia y una experiencia de voz más ágil y consistente.",
+    objective: "Reducir costo por contacto, aumentar la tasa de contacto efectivo y mejorar la conversión de campañas.",
+    ascii: "11101010 00111011",
+    impactMetrics: [
+      "↓ -35–60% costo por contacto",
+      "↑ +20–45% tasa de contacto efectivo",
+      "↑ +15–30% conversión en campañas",
+      "↑ +70% automatización de llamadas salientes"
+    ]
+  },
+  {
+    id: 1,
+    apiUrl: import.meta.env.VITE_PERFILADOR_API_URL || 'http://localhost:8004',
+    title: "PERFILADOR DE CLIENTE EN TIENDA (Vision AI)",
+    vertical: "Retail",
+    tech: "Vision AI",
+    description: "Analiza imágenes en tienda para estimar perfil demográfico y patrones de comportamiento de los visitantes, generando insights accionables para marketing, layout y estrategia comercial.",
+    objective: "Mejorar segmentación, aumentar conversión de campañas y elevar ventas en locales intervenidos.",
+    ascii: "01001100 01101111",
+    impactMetrics: [
+      "↑ +18–32% conversión en campañas segmentadas",
+      "↑ +12–20% ticket promedio por tienda",
+      "↑ +25% uso de insights en decisiones comerciales",
+      "↑ +10–18% ventas en locales intervenidos"
     ]
   },
 ];
