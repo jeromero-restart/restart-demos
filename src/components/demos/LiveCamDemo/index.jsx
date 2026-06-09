@@ -22,7 +22,7 @@ const TRIGGER_LABELS = {
 // El video MJPEG llega con algo de retraso (buffer del backend + decode del navegador),
 // mientras que las alertas SSE son instantáneas. Retrasamos la alerta este tanto para
 // que aparezca cuando el evento se ve en pantalla (no antes). Ajustable.
-const EVENT_DISPLAY_DELAY_MS = 1200;
+const EVENT_DISPLAY_DELAY_MS = 4500;
 
 export default function LiveCamDemo({ apiUrl }) {
   const [step, setStep] = useState('cameras');
