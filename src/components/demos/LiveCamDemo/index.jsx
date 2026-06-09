@@ -49,12 +49,15 @@ export default function LiveCamDemo({ apiUrl }) {
   const [events, setEvents] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Live monitoring stats
+  // Live monitoring stats. Count ticks arrive ~5-10/s, so we buffer them in refs
+  // and flush to state only ~2/s to avoid a re-render storm on a heavy component.
   const [liveCount, setLiveCount] = useState({ in_zone: 0, total: 0 });
   const [maxInZone, setMaxInZone] = useState(0);
   const [sessionStart, setSessionStart] = useState(null);
   const [now, setNow] = useState(Date.now());
   const [zoomSnap, setZoomSnap] = useState(null);
+  const countRef = useRef({ in_zone: 0, total: 0 });
+  const maxRef = useRef(0);
 
   const canvasRef = useRef(null);
   const streamImgRef = useRef(null);
@@ -176,6 +179,8 @@ export default function LiveCamDemo({ apiUrl }) {
   useEffect(() => {
     if (step !== 'live' || !areaId || !selectedCamera) return;
     setSessionStart(Date.now());
+    countRef.current = { in_zone: 0, total: 0 };
+    maxRef.current = 0;
     setLiveCount({ in_zone: 0, total: 0 });
     setMaxInZone(0);
     const es = new EventSource(
@@ -188,18 +193,24 @@ export default function LiveCamDemo({ apiUrl }) {
           const snapshot = captureSnapshot();
           setEvents(prev => [{ ...data, _ts: Date.now(), snapshot }, ...prev].slice(0, 40));
         } else if (data.type === 'count') {
-          setLiveCount({ in_zone: data.in_zone ?? 0, total: data.total ?? 0 });
-          setMaxInZone(m => Math.max(m, data.in_zone ?? 0));
+          // Buffer only — no setState here (flushed by the interval below).
+          const inZone = data.in_zone ?? 0;
+          countRef.current = { in_zone: inZone, total: data.total ?? 0 };
+          if (inZone > maxRef.current) maxRef.current = inZone;
         }
       } catch {}
     };
     return () => es.close();
   }, [step, areaId, selectedCamera, apiUrl]);
 
-  // Tick para el cronómetro de sesión
+  // Flush buffered count + tick the session clock at ~2/s (keeps re-renders bounded).
   useEffect(() => {
     if (step !== 'live') return;
-    const t = setInterval(() => setNow(Date.now()), 1000);
+    const t = setInterval(() => {
+      setNow(Date.now());
+      setLiveCount(countRef.current);
+      setMaxInZone(maxRef.current);
+    }, 500);
     return () => clearInterval(t);
   }, [step]);
 
