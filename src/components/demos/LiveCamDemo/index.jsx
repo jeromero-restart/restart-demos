@@ -37,22 +37,6 @@ export default function LiveCamDemo({ apiUrl }) {
   const [submitting, setSubmitting] = useState(false);
 
   const canvasRef = useRef(null);
-  const streamImgRef = useRef(null);
-  const snapCanvasRef = useRef(null);
-
-  const captureSnapshot = () => {
-    const img = streamImgRef.current;
-    const canvas = snapCanvasRef.current;
-    if (!img || !canvas) return null;
-    canvas.width  = img.naturalWidth  || img.clientWidth  || 640;
-    canvas.height = img.naturalHeight || img.clientHeight || 360;
-    try {
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      return canvas.toDataURL('image/jpeg', 0.75);
-    } catch {
-      return null;
-    }
-  };
 
   useEffect(() => {
     setLoading(true);
@@ -162,8 +146,7 @@ export default function LiveCamDemo({ apiUrl }) {
       try {
         const data = JSON.parse(e.data);
         if (data.type === 'event') {
-          const snapshot = captureSnapshot();
-          setEvents(prev => [{ ...data, _ts: Date.now(), snapshot }, ...prev].slice(0, 40));
+          setEvents(prev => [{ ...data, _ts: Date.now() }, ...prev].slice(0, 40));
         }
       } catch {}
     };
@@ -446,13 +429,10 @@ export default function LiveCamDemo({ apiUrl }) {
         {/* MJPEG stream */}
         <div className="flex-[2] bg-black flex items-center justify-center min-h-[220px]">
           <img
-            ref={streamImgRef}
-            crossOrigin="anonymous"
             src={`${apiUrl}/api/cameras/${selectedCamera.id}/live/video?area_id=${areaId}`}
             alt="Stream en vivo"
             className="max-w-full max-h-full object-contain"
           />
-          <canvas ref={snapCanvasRef} className="hidden" />
         </div>
 
         {/* Events panel */}
@@ -479,36 +459,37 @@ export default function LiveCamDemo({ apiUrl }) {
               </div>
             ) : (
               <div className="divide-y divide-[#EDEFFE]/10">
-                {events.map((ev, i) => (
-                  <div
-                    key={ev.event_id || i}
-                    className={`px-4 py-3 transition-colors ${i === 0 ? 'bg-[#0000FF]/30' : ''}`}
-                  >
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="font-display text-sm uppercase text-[#EDEFFE]">
-                        {ev.trigger_type === 'count' ? 'CONTEO'
-                          : ev.trigger_type === 'dwell' ? 'PERMANENCIA'
-                          : 'DIRECCIÓN'}
-                      </span>
-                      <span className="text-[10px] text-[#EDEFFE]/50 font-mono flex-shrink-0 ml-2">
-                        {ev.timestamp_s?.toFixed(1)}s
-                      </span>
+                {events.map((ev, i) => {
+                  const entity = ev.class_name === 'person' ? 'Persona'
+                    : ev.class_name === 'vehicle' ? 'Vehículo'
+                    : ev.class_name === 'animal' ? 'Animal'
+                    : (ev.class_name || 'Objeto');
+                  const reason = ev.trigger_type === 'count' ? 'Conteo en zona'
+                    : ev.trigger_type === 'dwell' ? 'Permanencia'
+                    : ev.trigger_type === 'direction' ? 'Ingreso por dirección'
+                    : 'Detección';
+                  return (
+                    <div
+                      key={ev.event_id || i}
+                      className={`px-4 py-3 border-l-4 border-l-red-400 transition-colors ${i === 0 ? 'bg-[#0000FF]/30' : ''}`}
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="flex items-center gap-1.5 font-display text-sm uppercase text-red-400">
+                          <Zap className="w-3.5 h-3.5" /> Alerta
+                        </span>
+                        <span className="text-[10px] text-[#EDEFFE]/50 font-mono flex-shrink-0 ml-2">
+                          {ev.timestamp_s != null ? `${ev.timestamp_s.toFixed(1)}s` : ''}
+                        </span>
+                      </div>
+                      <p className="font-sans text-sm text-[#EDEFFE]">
+                        {entity} <span className="text-[#EDEFFE]/50">#{ev.track_id}</span>
+                      </p>
+                      <p className="font-sans text-[10px] uppercase tracking-wider text-[#EDEFFE]/40 mt-0.5">
+                        {reason}
+                      </p>
                     </div>
-                    <p className="font-sans text-xs text-[#EDEFFE]/70 mb-2">
-                      {ev.class_name === 'person' ? 'Persona'
-                        : ev.class_name === 'vehicle' ? 'Vehículo'
-                        : ev.class_name} #{ev.track_id}
-                    </p>
-                    {ev.snapshot && (
-                      <img
-                        src={ev.snapshot}
-                        alt="snapshot"
-                        className="w-full border border-[#EDEFFE]/20 object-cover"
-                        style={{ maxHeight: '90px' }}
-                      />
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
