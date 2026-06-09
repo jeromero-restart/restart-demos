@@ -6,6 +6,37 @@ const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto
 const fmt = (t) => t ? `${String(t[0]).padStart(2,'0')}:${String(t[1]).padStart(2,'0')}` : '—';
 const isInvalidTime = (entry, exit) => entry && exit && (exit[0] * 60 + exit[1]) < (entry[0] * 60 + entry[1]);
 
+const present = (v) => v != null && v !== '' && String(v).toUpperCase() !== 'UNDEFINED';
+
+const STATUS = {
+  ok:   { dot: 'bg-green-400',  text: 'text-green-400',  ring: 'border-green-400/40' },
+  warn: { dot: 'bg-yellow-400', text: 'text-yellow-400', ring: 'border-yellow-400/40' },
+  fail: { dot: 'bg-red-400',    text: 'text-red-400',    ring: 'border-red-400/40' },
+};
+
+// Deriva el semáforo de validación a partir de los datos que el backend ya devuelve.
+function buildChecks({ patient, personnel, period, day_registries }) {
+  const total = day_registries.length;
+  const profSigned = day_registries.filter((r) => r.professional_signature).length;
+  const respSigned = day_registries.filter((r) => r.responsible_signature).length;
+  const sigStatus = (n) => (total === 0 ? 'warn' : n === total ? 'ok' : n === 0 ? 'fail' : 'warn');
+
+  return [
+    { label: 'Paciente identificado',   status: present(patient?.name) ? 'ok' : 'fail',
+      detail: present(patient?.name) ? patient.name : 'Sin coincidencia' },
+    { label: 'Profesional identificado', status: present(personnel?.name) ? 'ok' : 'fail',
+      detail: present(personnel?.name) ? personnel.name : 'Sin coincidencia' },
+    { label: 'Obra social',             status: present(patient?.coverage) ? 'ok' : 'warn',
+      detail: present(patient?.coverage) ? patient.coverage : 'No legible' },
+    { label: 'Período',                 status: (Array.isArray(period) && period[1]) ? 'ok' : 'warn',
+      detail: (Array.isArray(period) && period[1]) ? `${MONTHS[(period[0] || 1) - 1]} ${period[1]}` : 'No legible' },
+    { label: 'Firma profesional',       status: sigStatus(profSigned),
+      detail: `${profSigned}/${total} registros` },
+    { label: 'Firma responsable',       status: sigStatus(respSigned),
+      detail: `${respSigned}/${total} registros` },
+  ];
+}
+
 function DownloadBtn({ onClick, label }) {
   return (
     <button
@@ -106,6 +137,11 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
 
   const { patient, personnel, period, day_registries = [], unbound = [], observations = [] } = record;
   const pdfUrl = `${API}/assistance_registry/file?registry_id=${id}`;
+  const checks = buildChecks({ patient, personnel, period, day_registries });
+  const failCount = checks.filter((c) => c.status === 'fail').length;
+  const warnCount = checks.filter((c) => c.status === 'warn').length;
+  const overall = failCount > 0 ? 'fail' : warnCount > 0 ? 'warn' : 'ok';
+  const overallLabel = overall === 'ok' ? 'Validado' : overall === 'warn' ? `${warnCount} advertencia${warnCount !== 1 ? 's' : ''}` : `${failCount} error${failCount !== 1 ? 'es' : ''}`;
 
   return (
     <div className="h-full flex flex-col">
@@ -154,6 +190,26 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
                 value={personnel?.name}
                 sub={period ? `Período: ${MONTHS[(period[0] || 1) - 1]} ${period[1]}` : undefined}
               />
+            </div>
+
+            {/* Semáforo de validación */}
+            <div className={`border bg-[#0000FF]/10 ${STATUS[overall].ring}`}>
+              <div className="flex items-center justify-between px-3 py-2 border-b border-[#EDEFFE]/10">
+                <span className="font-display text-sm uppercase tracking-widest text-[#EDEFFE]/70">/// Validación</span>
+                <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${STATUS[overall].text}`}>
+                  <span className={`w-2 h-2 rounded-full ${STATUS[overall].dot}`} />
+                  {overallLabel}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 p-3">
+                {checks.map((c, i) => (
+                  <div key={i} className="flex items-center gap-2 min-w-0">
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${STATUS[c.status].dot}`} />
+                    <span className="font-sans text-xs text-[#EDEFFE]/80 flex-shrink-0">{c.label}</span>
+                    <span className="font-sans text-[10px] text-[#EDEFFE]/40 truncate ml-auto" title={c.detail}>{c.detail}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Observaciones */}
