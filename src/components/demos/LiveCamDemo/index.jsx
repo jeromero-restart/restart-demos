@@ -19,19 +19,6 @@ const TRIGGER_LABELS = {
   direction: (p) => `Ingreso desde el ${p.direction === 'N' ? 'Norte' : p.direction === 'S' ? 'Sur' : p.direction === 'E' ? 'Este' : 'Oeste'}`,
 };
 
-const pad2 = (n) => String(n).padStart(2, '0');
-const fmtClock = (ts) => { const d = new Date(ts); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`; };
-const fmtElapsed = (s) => `${pad2(Math.floor(s / 60))}:${pad2(s % 60)}`;
-
-function Stat({ label, value, accent }) {
-  return (
-    <div className="flex flex-col items-center justify-center px-3 py-1.5 min-w-[60px]">
-      <span className={`font-display text-xl leading-none ${accent || 'text-[#EDEFFE]'}`}>{value}</span>
-      <span className="text-[9px] font-bold uppercase tracking-widest text-[#EDEFFE]/40 mt-0.5">{label}</span>
-    </div>
-  );
-}
-
 export default function LiveCamDemo({ apiUrl }) {
   const [step, setStep] = useState('cameras');
   const [cameras, setCameras] = useState([]);
@@ -48,16 +35,6 @@ export default function LiveCamDemo({ apiUrl }) {
   const [areaId, setAreaId] = useState(null);
   const [events, setEvents] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-
-  // Live monitoring stats. Count ticks arrive ~5-10/s, so we buffer them in refs
-  // and flush to state only ~2/s to avoid a re-render storm on a heavy component.
-  const [liveCount, setLiveCount] = useState({ in_zone: 0, total: 0 });
-  const [maxInZone, setMaxInZone] = useState(0);
-  const [sessionStart, setSessionStart] = useState(null);
-  const [now, setNow] = useState(Date.now());
-  const [zoomSnap, setZoomSnap] = useState(null);
-  const countRef = useRef({ in_zone: 0, total: 0 });
-  const maxRef = useRef(0);
 
   const canvasRef = useRef(null);
   const streamImgRef = useRef(null);
@@ -178,11 +155,6 @@ export default function LiveCamDemo({ apiUrl }) {
 
   useEffect(() => {
     if (step !== 'live' || !areaId || !selectedCamera) return;
-    setSessionStart(Date.now());
-    countRef.current = { in_zone: 0, total: 0 };
-    maxRef.current = 0;
-    setLiveCount({ in_zone: 0, total: 0 });
-    setMaxInZone(0);
     const es = new EventSource(
       `${apiUrl}/api/cameras/${selectedCamera.id}/live/events?area_id=${areaId}`
     );
@@ -192,27 +164,11 @@ export default function LiveCamDemo({ apiUrl }) {
         if (data.type === 'event') {
           const snapshot = captureSnapshot();
           setEvents(prev => [{ ...data, _ts: Date.now(), snapshot }, ...prev].slice(0, 40));
-        } else if (data.type === 'count') {
-          // Buffer only — no setState here (flushed by the interval below).
-          const inZone = data.in_zone ?? 0;
-          countRef.current = { in_zone: inZone, total: data.total ?? 0 };
-          if (inZone > maxRef.current) maxRef.current = inZone;
         }
       } catch {}
     };
     return () => es.close();
   }, [step, areaId, selectedCamera, apiUrl]);
-
-  // Flush buffered count + tick the session clock at ~2/s (keeps re-renders bounded).
-  useEffect(() => {
-    if (step !== 'live') return;
-    const t = setInterval(() => {
-      setNow(Date.now());
-      setLiveCount(countRef.current);
-      setMaxInZone(maxRef.current);
-    }, 500);
-    return () => clearInterval(t);
-  }, [step]);
 
   const stopLive = async () => {
     if (selectedCamera && areaId) {
@@ -486,16 +442,6 @@ export default function LiveCamDemo({ apiUrl }) {
         </button>
       </div>
 
-      {/* Barra de stats en vivo */}
-      <div className="flex items-stretch flex-wrap border-b-2 border-[#EDEFFE]/20 bg-[#1F1F1F] divide-x divide-[#EDEFFE]/10 flex-shrink-0">
-        <Stat label="En zona" value={liveCount.in_zone} accent={liveCount.in_zone > 0 ? 'text-green-400' : 'text-[#EDEFFE]/40'} />
-        <Stat label="Pico" value={maxInZone} />
-        <Stat label="En cuadro" value={liveCount.total} />
-        <Stat label="Alertas" value={events.length} accent={events.length > 0 ? 'text-yellow-400' : 'text-[#EDEFFE]/40'} />
-        <Stat label="Tracks" value={new Set(events.map((e) => e.track_id)).size} />
-        <Stat label="Sesión" value={sessionStart ? fmtElapsed(Math.floor((now - sessionStart) / 1000)) : '00:00'} />
-      </div>
-
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
         {/* MJPEG stream */}
         <div className="flex-[2] bg-black flex items-center justify-center min-h-[220px]">
@@ -533,54 +479,41 @@ export default function LiveCamDemo({ apiUrl }) {
               </div>
             ) : (
               <div className="divide-y divide-[#EDEFFE]/10">
-                {events.map((ev, i) => {
-                  const accent = ev.trigger_type === 'count' ? 'border-l-yellow-400'
-                    : ev.trigger_type === 'dwell' ? 'border-l-orange-400'
-                    : 'border-l-cyan-400';
-                  return (
-                    <div
-                      key={ev.event_id || i}
-                      className={`px-4 py-3 border-l-4 ${accent} transition-colors ${i === 0 ? 'bg-[#0000FF]/30' : ''}`}
-                    >
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="font-display text-sm uppercase text-[#EDEFFE]">
-                          {ev.trigger_type === 'count' ? 'CONTEO'
-                            : ev.trigger_type === 'dwell' ? 'PERMANENCIA'
-                            : 'DIRECCIÓN'}
-                        </span>
-                        <span className="text-[10px] text-[#EDEFFE]/50 font-mono flex-shrink-0 ml-2 text-right">
-                          {ev._ts ? fmtClock(ev._ts) : ''}
-                          <span className="block text-[#EDEFFE]/30">{ev.timestamp_s?.toFixed(1)}s</span>
-                        </span>
-                      </div>
-                      <p className="font-sans text-xs text-[#EDEFFE]/70 mb-2">
-                        {ev.class_name === 'person' ? 'Persona'
-                          : ev.class_name === 'vehicle' ? 'Vehículo'
-                          : ev.class_name} #{ev.track_id}
-                      </p>
-                      {ev.snapshot && (
-                        <button onClick={() => setZoomSnap(ev.snapshot)} className="block w-full group/snap" title="Ampliar">
-                          <img
-                            src={ev.snapshot}
-                            alt="snapshot"
-                            className="w-full border border-[#EDEFFE]/20 group-hover/snap:border-[#EDEFFE] object-cover transition-colors"
-                            style={{ maxHeight: '90px' }}
-                          />
-                        </button>
-                      )}
+                {events.map((ev, i) => (
+                  <div
+                    key={ev.event_id || i}
+                    className={`px-4 py-3 transition-colors ${i === 0 ? 'bg-[#0000FF]/30' : ''}`}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-display text-sm uppercase text-[#EDEFFE]">
+                        {ev.trigger_type === 'count' ? 'CONTEO'
+                          : ev.trigger_type === 'dwell' ? 'PERMANENCIA'
+                          : 'DIRECCIÓN'}
+                      </span>
+                      <span className="text-[10px] text-[#EDEFFE]/50 font-mono flex-shrink-0 ml-2">
+                        {ev.timestamp_s?.toFixed(1)}s
+                      </span>
                     </div>
-                  );
-                })}
+                    <p className="font-sans text-xs text-[#EDEFFE]/70 mb-2">
+                      {ev.class_name === 'person' ? 'Persona'
+                        : ev.class_name === 'vehicle' ? 'Vehículo'
+                        : ev.class_name} #{ev.track_id}
+                    </p>
+                    {ev.snapshot && (
+                      <img
+                        src={ev.snapshot}
+                        alt="snapshot"
+                        className="w-full border border-[#EDEFFE]/20 object-cover"
+                        style={{ maxHeight: '90px' }}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
         </div>
       </div>
-      {zoomSnap && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-6" onClick={() => setZoomSnap(null)}>
-          <img src={zoomSnap} alt="snapshot ampliado" className="max-w-full max-h-full border-2 border-[#EDEFFE]" />
-        </div>
-      )}
     </div>
   );
 
