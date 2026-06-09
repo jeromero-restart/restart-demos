@@ -48,10 +48,36 @@ function DownloadBtn({ onClick, label }) {
   );
 }
 
-function InfoCard({ label, value, sub }) {
+function scoreColor(score) {
+  if (score == null) return 'text-[#EDEFFE]/40 border-[#EDEFFE]/20';
+  if (score >= 90) return 'text-green-400 border-green-400/40';
+  if (score >= 70) return 'text-yellow-400 border-yellow-400/40';
+  return 'text-red-400 border-red-400/40';
+}
+
+// Badge de coincidencia fuzzy. read=lo que leyó el LLM, matched=la entidad de la base.
+function MatchBadge({ score, read, matched, exact }) {
+  if (score == null && !exact) return null;
+  const tip = exact
+    ? `Coincidencia exacta\nLeído: ${read ?? '—'}\nBase: ${matched ?? '—'}`
+    : `Leído: ${read ?? '—'}\nBase: ${matched ?? '—'}\nSimilitud: ${score}%`;
+  return (
+    <span
+      title={tip}
+      className={`flex items-center gap-1 text-[9px] font-bold uppercase border px-1.5 py-0.5 cursor-help ${scoreColor(exact ? 100 : score)}`}
+    >
+      {exact ? '✓ exacto' : `${score}% match`}
+    </span>
+  );
+}
+
+function InfoCard({ label, value, sub, badge }) {
   return (
     <div className="border border-[#EDEFFE]/20 bg-[#0000FF]/20 p-3">
-      <p className="font-sans text-[10px] font-bold uppercase text-[#EDEFFE]/40 tracking-widest mb-1">{label}</p>
+      <div className="flex items-start justify-between gap-2 mb-1">
+        <p className="font-sans text-[10px] font-bold uppercase text-[#EDEFFE]/40 tracking-widest">{label}</p>
+        {badge}
+      </div>
       <p className="font-sans font-bold text-sm text-[#EDEFFE]">{value || '—'}</p>
       {sub && <p className="font-sans text-[10px] text-[#EDEFFE]/50 mt-0.5">{sub}</p>}
     </div>
@@ -135,8 +161,10 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
     </div>
   );
 
-  const { patient, personnel, period, day_registries = [], unbound = [], observations = [] } = record;
+  const { patient, personnel, period, day_registries = [], unbound = [], observations = [], match_meta } = record;
   const pdfUrl = `${API}/assistance_registry/file?registry_id=${id}`;
+  const pm = match_meta?.patient;
+  const prm = match_meta?.personnel;
   const checks = buildChecks({ patient, personnel, period, day_registries });
   const failCount = checks.filter((c) => c.status === 'fail').length;
   const warnCount = checks.filter((c) => c.status === 'warn').length;
@@ -184,11 +212,13 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
                 label="Paciente"
                 value={patient?.name}
                 sub={[patient?.dni && `DNI: ${patient.dni}`, patient?.coverage].filter(Boolean).join(' · ')}
+                badge={pm && <MatchBadge score={pm.name_score} read={pm.raw_name} matched={pm.matched_name} exact={pm.dni_match} />}
               />
               <InfoCard
                 label="Profesional"
                 value={personnel?.name}
                 sub={period ? `Período: ${MONTHS[(period[0] || 1) - 1]} ${period[1]}` : undefined}
+                badge={prm && <MatchBadge score={prm.name_score} read={prm.raw_name} matched={prm.matched_name} />}
               />
             </div>
 
