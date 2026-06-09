@@ -233,7 +233,7 @@ export default function LiveCamDemo({ apiUrl }) {
   if (step === 'config') return (
     <div className="h-full flex flex-col lg:flex-row overflow-hidden">
       {/* Video + canvas */}
-      <div className="flex-[2] relative bg-black border-b-2 lg:border-b-0 lg:border-r-2 border-[#EDEFFE] min-h-[280px]">
+      <div className="flex-[2] relative bg-black border-b-2 lg:border-b-0 lg:border-r-2 border-[#EDEFFE] min-h-[280px] flex items-center justify-center overflow-hidden">
         <div className="absolute top-3 left-3 right-3 z-20 bg-[#0000FF]/90 border border-[#EDEFFE] px-3 py-2 flex justify-between items-center">
           <span className="font-sans text-xs text-[#EDEFFE]">
             {!closed
@@ -254,19 +254,22 @@ export default function LiveCamDemo({ apiUrl }) {
           )}
         </div>
 
-        <video
-          src={`${apiUrl}/api/cameras/${selectedCamera.id}/stream?v=2`}
-          autoPlay muted loop playsInline
-          className="w-full h-full object-contain"
-        />
-
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full cursor-crosshair z-10"
-          width={1280}
-          height={720}
-          onClick={handleCanvasClick}
-        />
+        {/* Caja 16:9 exacta: el canvas se superpone al video sin letterbox, así las
+            coordenadas dibujadas coinciden 1:1 con el frame que procesa el backend. */}
+        <div className="relative w-full aspect-video">
+          <video
+            src={`${apiUrl}/api/cameras/${selectedCamera.id}/stream?v=2`}
+            autoPlay muted loop playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full cursor-crosshair z-10"
+            width={1280}
+            height={720}
+            onClick={handleCanvasClick}
+          />
+        </div>
       </div>
 
       {/* Config panel */}
