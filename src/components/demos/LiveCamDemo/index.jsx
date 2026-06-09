@@ -305,7 +305,7 @@ export default function LiveCamDemo({ apiUrl }) {
         </div>
 
         <video
-          src={`${apiUrl}/api/cameras/${selectedCamera.id}/stream`}
+          src={`${apiUrl}/api/cameras/${selectedCamera.id}/stream?v=2`}
           autoPlay muted loop playsInline
           className="w-full h-full object-contain"
         />
