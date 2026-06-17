@@ -8,6 +8,7 @@ import LiveCamDemo from './components/demos/LiveCamDemo/index';
 import AgentesDemo from './components/demos/AgentesDemo/index';
 import PerfiladorDemo from './components/demos/PerfiladorDemo/index';
 import AgenteChatDemo from './components/demos/AgenteChatDemo/index';
+import EppDemo from './components/demos/EppDemo/index';
 import UsersPanel from './components/admin/UsersPanel';
 import { demosData, verticals } from './data/demos';
 
@@ -135,6 +136,8 @@ export default function App() {
                 <AgentesDemo apiUrl={activeDemo.apiUrl} />
               ) : activeDemo.id === 4 ? (
                 <AgenteChatDemo apiUrl={activeDemo.apiUrl} knowledgeBase={activeDemo.knowledgeBase} />
+              ) : activeDemo.id === 6 ? (
+                <EppDemo apiUrl={activeDemo.apiUrl} />
               ) : activeDemo.botUrl ? (
                 <TelegramLauncher
                   botUrl={activeDemo.botUrl}

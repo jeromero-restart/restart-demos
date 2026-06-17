@@ -68,6 +68,22 @@ export const demosData = [
     ]
   },
   {
+    id: 6,
+    apiUrl: import.meta.env.VITE_EPP_API_URL || 'http://localhost:8005',
+    title: "DETECCIÓN DE EPP Y FUEGO EN PLANTA",
+    vertical: "Seguridad",
+    tech: "Vision AI",
+    description: "Monitorea cámaras de planta y detecta en tiempo real el uso de casco (EPP), personas sin protección y focos de fuego/humo, generando alertas inmediatas para prevenir incidentes.",
+    objective: "Reducir accidentes por falta de EPP, acelerar la respuesta ante incendios y automatizar el control de cumplimiento de seguridad.",
+    ascii: "01000101 01010000",
+    impactMetrics: [
+      "↓ -50% incidentes por falta de EPP",
+      "↑ +90% cobertura de control de seguridad",
+      "↓ -70% tiempo de detección de fuego/humo",
+      "↑ +100% trazabilidad de cumplimiento"
+    ]
+  },
+  {
     id: 2,
     apiUrl: import.meta.env.VITE_AGENTES_API_URL || 'http://localhost:8002',
     title: "AGENTES TELEFÓNICOS AUTÓNOMOS",
