@@ -1,14 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AlertCircle, Loader, ShieldAlert, HardHat, Flame, Zap, Eye, Maximize2, ArrowLeft } from 'lucide-react';
 
-// Metadatos de presentación por cámara (los ids vienen del backend /health).
-const CAM_META = {
-  'cam-helmet':    { label: 'Personas con casco', icon: HardHat,     accent: 'border-green-400',  dot: 'bg-green-400' },
-  'cam-fire':      { label: 'Fuego / Humo',       icon: Flame,       accent: 'border-orange-400', dot: 'bg-orange-400', critical: true },
-  'cam-no-helmet': { label: 'Personas sin casco', icon: ShieldAlert, accent: 'border-red-400',    dot: 'bg-red-400',    critical: true },
+// Deriva ícono/label/color del prefijo del id (cam-helmet*, cam-no-helmet*, cam-fire*),
+// agregando el número de variante si lo tiene (cam-helmet-3 -> "Personas con casco 3").
+const metaFor = (id) => {
+  const num = (id.match(/-(\d+)$/) || [])[1];
+  const suf = num ? ` ${num}` : '';
+  if (id.startsWith('cam-no-helmet')) return { label: `Personas sin casco${suf}`, icon: ShieldAlert, accent: 'border-red-400',    dot: 'bg-red-400',    critical: true };
+  if (id.startsWith('cam-fire'))      return { label: `Fuego / Humo${suf}`,       icon: Flame,       accent: 'border-orange-400', dot: 'bg-orange-400', critical: true };
+  if (id.startsWith('cam-helmet'))    return { label: `Personas con casco${suf}`, icon: HardHat,     accent: 'border-green-400',  dot: 'bg-green-400' };
+  return { label: id, icon: Eye, accent: 'border-[#EDEFFE]/30', dot: 'bg-[#EDEFFE]/40' };
 };
-const ORDER = ['cam-helmet', 'cam-fire', 'cam-no-helmet'];
-const metaFor = (id) => CAM_META[id] || { label: id, icon: Eye, accent: 'border-[#EDEFFE]/30', dot: 'bg-[#EDEFFE]/40' };
+
+// Orden: con casco -> fuego -> sin casco, y dentro por número.
+const sortKey = (id) => {
+  const grp = id.startsWith('cam-no-helmet') ? 2 : id.startsWith('cam-fire') ? 1 : 0;
+  const num = parseInt((id.match(/-(\d+)$/) || [])[1] || '1', 10);
+  return grp * 100 + num;
+};
 
 const classLabel = (c) => {
   if (c === 'no_helmet') return 'Persona SIN casco';
@@ -58,7 +67,7 @@ export default function EppDemo({ apiUrl }) {
         if (!active) return;
         const cams = Object.entries(data.cameras || {})
           .map(([id, h]) => ({ id, state: h.state, fps: h.fps }))
-          .sort((a, b) => (ORDER.indexOf(a.id) - ORDER.indexOf(b.id)));
+          .sort((a, b) => sortKey(a.id) - sortKey(b.id));
         setCameras(cams);
         setError(null);
         setLoading(false);
