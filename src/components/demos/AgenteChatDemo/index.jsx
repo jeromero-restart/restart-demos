@@ -193,7 +193,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
         <span className="font-display text-base uppercase tracking-widest text-[#EDEFFE] truncate">{pdf.title}</span>
         <button
           onClick={() => setPdf(null)}
-          className="flex items-center gap-1 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors"
+          className="flex items-center gap-1 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-colors"
         >
           <X className="w-4 h-4" /> Cerrar
         </button>
@@ -222,11 +222,11 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
             <button
               key={key}
               onClick={() => chooseRole(key)}
-              className="text-left border-2 border-[#EDEFFE] bg-[#0000FF]/10 p-4 hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors group shadow-[4px_4px_0_#1F1F1F]"
+              className="text-left border-2 border-[#EDEFFE] bg-[#1e22aa]/10 p-4 hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-colors group shadow-[4px_4px_0_#1F1F1F]"
             >
-              <Icon className="w-7 h-7 mb-2 text-[#EDEFFE] group-hover:text-[#0000FF]" />
-              <p className="font-display text-2xl uppercase leading-none text-[#EDEFFE] group-hover:text-[#0000FF]">{label}</p>
-              <p className="font-sans text-[11px] text-[#EDEFFE]/60 group-hover:text-[#0000FF]/80 mt-2 leading-relaxed">{desc}</p>
+              <Icon className="w-7 h-7 mb-2 text-[#EDEFFE] group-hover:text-[#1e22aa]" />
+              <p className="font-display text-2xl uppercase leading-none text-[#EDEFFE] group-hover:text-[#1e22aa]">{label}</p>
+              <p className="font-sans text-[11px] text-[#EDEFFE]/60 group-hover:text-[#1e22aa]/80 mt-2 leading-relaxed">{desc}</p>
             </button>
           ))}
         </div>
@@ -246,7 +246,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
                   key={d.id}
                   onClick={() => openDoc(d)}
                   title="Previsualizar PDF"
-                  className="flex items-center gap-2 border border-[#EDEFFE]/30 bg-[#0000FF]/10 px-3 py-2 text-left hover:border-[#EDEFFE] hover:bg-[#EDEFFE]/10 transition-colors group"
+                  className="flex items-center gap-2 border border-[#EDEFFE]/30 bg-[#1e22aa]/10 px-3 py-2 text-left hover:border-[#EDEFFE] hover:bg-[#EDEFFE]/10 transition-colors group"
                 >
                   <FileText className="w-4 h-4 text-[#EDEFFE]/50 group-hover:text-[#EDEFFE] flex-shrink-0" />
                   <span className="flex-1 min-w-0">
@@ -296,7 +296,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
 
       {/* Panel documentos cargados */}
       {showDocs && (
-        <div className="border-b-2 border-[#EDEFFE]/20 bg-[#0000FF]/10 px-4 py-3">
+        <div className="border-b-2 border-[#EDEFFE]/20 bg-[#1e22aa]/10 px-4 py-3">
           <p className="font-display text-sm uppercase tracking-widest text-[#EDEFFE]/70 mb-2">/// Documentos cargados</p>
           {docs.length === 0 ? (
             <p className="font-sans text-xs text-[#EDEFFE]/40">No hay documentos indexados.</p>
@@ -326,7 +326,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {m.role === 'user' ? (
-              <div className="max-w-[80%] bg-[#EDEFFE] text-[#0000FF] px-3 py-2 font-sans text-sm font-medium">
+              <div className="max-w-[80%] bg-[#EDEFFE] text-[#1e22aa] px-3 py-2 font-sans text-sm font-medium">
                 {m.text}
               </div>
             ) : (
@@ -374,7 +374,7 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
               <button
                 key={i}
                 onClick={() => send(q)}
-                className="text-left flex items-start gap-2 border border-[#EDEFFE]/20 bg-[#0000FF]/10 px-3 py-2 hover:border-[#EDEFFE] transition-colors"
+                className="text-left flex items-start gap-2 border border-[#EDEFFE]/20 bg-[#1e22aa]/10 px-3 py-2 hover:border-[#EDEFFE] transition-colors"
               >
                 <ChevronRight className="w-3 h-3 text-[#EDEFFE]/40 flex-shrink-0 mt-0.5" />
                 <span className="font-sans text-xs text-[#EDEFFE]/70 leading-relaxed">{q}</span>
@@ -403,12 +403,12 @@ export default function AgenteChatDemo({ apiUrl, knowledgeBase = [] }) {
             onKeyDown={(e) => e.key === 'Enter' && send()}
             placeholder="Escribí tu consulta…"
             disabled={loading}
-            className="flex-1 bg-[#0000FF]/10 border-2 border-[#EDEFFE]/30 focus:border-[#EDEFFE] outline-none px-3 py-2 font-sans text-sm text-[#EDEFFE] placeholder-[#EDEFFE]/40 transition-colors disabled:opacity-50"
+            className="flex-1 bg-[#1e22aa]/10 border-2 border-[#EDEFFE]/30 focus:border-[#EDEFFE] outline-none px-3 py-2 font-sans text-sm text-[#EDEFFE] placeholder-[#EDEFFE]/40 transition-colors disabled:opacity-50"
           />
           <button
             onClick={() => send()}
             disabled={loading || !input.trim()}
-            className="bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] px-4 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
+            className="bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] px-4 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <Send className="w-4 h-4" />
           </button>

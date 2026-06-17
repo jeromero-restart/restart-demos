@@ -22,7 +22,7 @@ export default function MedihomeDemo({ apiUrl, onExpandToggle }) {
             onClick={() => setView(key)}
             className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
               view === key || (key === 'results' && view === 'detail')
-                ? 'bg-[#EDEFFE] text-[#0000FF]'
+                ? 'bg-[#EDEFFE] text-[#1e22aa]'
                 : 'text-[#EDEFFE]/50 hover:text-[#EDEFFE]'
             } ${i > 0 ? 'border-l border-[#EDEFFE]/20' : ''}`}
           >

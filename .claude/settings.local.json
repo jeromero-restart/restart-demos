@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh repo *)",
+      "PowerShell(gh repo view rst-ai/poc-sialar_live_cam_detection --json description,name,url,languages)",
+      "WebSearch",
+      "Bash(git clone *)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Showroom\\\\poc-sialar_live_cam_detection\" -Recurse -Force | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Showroom\\\\poc-sialar_live_cam_detection\\\\\", \"\"\\) } | Sort-Object)",
+      "Read(//c/Showroom/**)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Showroom\\\\poc-sialar_live_cam_detection\" -Name)",
+      "Bash(npm run *)",
+      "PowerShell(docker --version 2>&1)",
+      "PowerShell(docker compose version 2>&1)",
+      "PowerShell(python --version 2>&1)",
+      "PowerShell(pip --version 2>&1)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://34.26.220.206/health\" -TimeoutSec 5 2>&1)",
+      "PowerShell(ffmpeg -version 2>&1)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:8001/health\" -TimeoutSec 5 2>&1)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:8001/health\" -TimeoutSec 5 -UseBasicParsing 2>&1)",
+      "PowerShell(Stop-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Name \"python\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:8001/api/cameras\" -UseBasicParsing 2>&1)",
+      "PowerShell(Copy-Item \"C:\\\\Showroom\\\\poc-agentes-telefonicos\\\\.env.example\" \"C:\\\\Showroom\\\\poc-agentes-telefonicos\\\\.env\")",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:8002/health\" -UseBasicParsing 2>&1)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:8002/api/agent\" -UseBasicParsing 2>&1)",
+      "PowerShell(Stop-Process -Id \\(Get-NetTCPConnection -LocalPort 8002 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -First 1\\) -Force -ErrorAction SilentlyContinue; Write-Host \"stopped\")",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:8002/api/voices\" -UseBasicParsing 2>&1)",
+      "PowerShell($pid = \\(Get-NetTCPConnection -LocalPort 8002 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($pid\\) { Stop-Process -Id $pid -Force; Write-Host \"killed $pid\" } else { Write-Host \"free\" })",
+      "PowerShell($proc = \\(Get-NetTCPConnection -LocalPort 8002 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($proc\\) { Stop-Process -Id $proc -Force; Write-Host \"killed $proc\" } else { Write-Host \"free\" })",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8002 -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8002/api/voices\")",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8002/api/agent\")",
+      "Bash(curl -s -X PATCH http://localhost:8002/api/agent -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(curl -s http://localhost:8002/api/agent)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue)"
+    ],
+    "additionalDirectories": [
+      "C:\\Showroom\\poc-sialar_live_cam_detection\\backend\\app",
+      "C:\\Showroom\\poc-sialar_live_cam_detection\\backend",
+      "C:\\Showroom\\poc-agentes-telefonicos\\app",
+      "C:\\Showroom\\poc-agentes-telefonicos"
+    ]
+  }
+}

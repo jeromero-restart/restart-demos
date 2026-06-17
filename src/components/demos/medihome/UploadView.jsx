@@ -167,7 +167,7 @@ export default function UploadView({ apiUrl, onSuccess, onExpandToggle }) {
           <button
             onClick={handleSubmit}
             disabled={!file || processing}
-            className="w-full max-w-md flex items-center justify-center gap-2 bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] py-3 font-display text-lg uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full max-w-md flex items-center justify-center gap-2 bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] py-3 font-display text-lg uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Procesando…</> : <><Zap className="w-4 h-4" /> Procesar</>}
           </button>
@@ -249,7 +249,7 @@ export default function UploadView({ apiUrl, onSuccess, onExpandToggle }) {
               <p className="font-sans text-xs text-[#EDEFFE]/40 text-center py-8">Sin pacientes registrados</p>
             )}
             {!dbLoading && patients.map((p) => (
-              <div key={p.id} className="border border-[#EDEFFE]/20 bg-[#0000FF]/10 p-3">
+              <div key={p.id} className="border border-[#EDEFFE]/20 bg-[#1e22aa]/10 p-3">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
                     <p className="font-sans text-sm font-bold text-[#EDEFFE]">{p.name}</p>

@@ -54,7 +54,7 @@ export default function ResultsView({ apiUrl, onDetail }) {
       <div className="border-2 border-[#EDEFFE]/40 p-6 text-center max-w-sm">
         <p className="font-display text-2xl text-[#EDEFFE] uppercase mb-2">Sin conexión</p>
         <p className="font-sans text-xs text-[#EDEFFE]/60 mb-4">{error}</p>
-        <button onClick={fetchRecords} className="flex items-center gap-2 mx-auto text-xs font-bold uppercase border-2 border-[#EDEFFE] px-4 py-2 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors">
+        <button onClick={fetchRecords} className="flex items-center gap-2 mx-auto text-xs font-bold uppercase border-2 border-[#EDEFFE] px-4 py-2 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-colors">
           <RefreshCw className="w-3 h-3" /> Reintentar
         </button>
       </div>
@@ -94,7 +94,7 @@ export default function ResultsView({ apiUrl, onDetail }) {
             <tr
               key={key}
               onClick={() => onDetail(key)}
-              className="border-b border-[#EDEFFE]/10 hover:bg-[#0000FF]/30 cursor-pointer group transition-colors"
+              className="border-b border-[#EDEFFE]/10 hover:bg-[#1e22aa]/30 cursor-pointer group transition-colors"
             >
               <td className="py-3 px-3 font-display text-base text-[#EDEFFE]/30">{i + 1}</td>
               <td className="py-3 px-3 font-sans font-bold text-[#EDEFFE]">{registry.paciente_nombre || '—'}</td>
@@ -102,7 +102,7 @@ export default function ResultsView({ apiUrl, onDetail }) {
               <td className="py-3 px-3 font-sans text-[#EDEFFE]/70 max-w-[8rem] truncate">{registry.paciente_os || '—'}</td>
               <td className="py-3 px-3">
                 {registry.periodo && (
-                  <span className="bg-[#0000FF] text-[#EDEFFE] px-2 py-0.5 font-display text-sm border border-[#EDEFFE]/30">
+                  <span className="bg-[#1e22aa] text-[#EDEFFE] px-2 py-0.5 font-display text-sm border border-[#EDEFFE]/30">
                     {fmtPeriod(registry.periodo)}
                   </span>
                 )}

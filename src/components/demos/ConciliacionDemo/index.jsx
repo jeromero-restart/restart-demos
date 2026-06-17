@@ -165,7 +165,7 @@ export default function ConciliacionDemo({ apiUrl }) {
             onDrop={onDrop}
             onClick={() => fileInputRef.current?.click()}
             className={`border-2 border-dashed p-12 flex flex-col items-center gap-4 cursor-pointer transition-all ${
-              dragging ? 'border-[#EDEFFE] bg-[#0000FF]/20' : 'border-[#EDEFFE]/30 hover:border-[#EDEFFE]/60 hover:bg-[#0000FF]/10'
+              dragging ? 'border-[#EDEFFE] bg-[#1e22aa]/20' : 'border-[#EDEFFE]/30 hover:border-[#EDEFFE]/60 hover:bg-[#1e22aa]/10'
             }`}
           >
             <FileSpreadsheet className="w-12 h-12 text-[#EDEFFE]/40" />
@@ -187,7 +187,7 @@ export default function ConciliacionDemo({ apiUrl }) {
 
   if (step === STEP.SUGGESTIONS) return (
     <div className="h-full flex flex-col overflow-hidden text-[#EDEFFE]">
-      <div className="border-b-2 border-[#EDEFFE] px-5 py-3 flex items-center justify-between flex-shrink-0 bg-[#0000FF]">
+      <div className="border-b-2 border-[#EDEFFE] px-5 py-3 flex items-center justify-between flex-shrink-0 bg-[#1e22aa]">
         <div>
           <span className="font-display text-lg uppercase">// CONCILIACIONES SUGERIDAS</span>
           <span className="ml-3 text-[10px] border border-[#EDEFFE]/40 px-2 py-0.5 font-bold uppercase">
@@ -207,7 +207,7 @@ export default function ConciliacionDemo({ apiUrl }) {
           <button
             onClick={autoReconcile}
             disabled={processing}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase border-2 border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase border-2 border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-all"
           >
             {processing ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
             Conciliar todo automáticamente
@@ -236,7 +236,7 @@ export default function ConciliacionDemo({ apiUrl }) {
           return (
             <div key={sc.id} className={`transition-colors ${isCon ? 'bg-green-400/5' : ''}`}>
               <div
-                className="px-5 py-3 flex items-center gap-4 cursor-pointer hover:bg-[#0000FF]/10"
+                className="px-5 py-3 flex items-center gap-4 cursor-pointer hover:bg-[#1e22aa]/10"
                 onClick={() => toggleExpand(sc.id)}
               >
                 {/* Checkbox */}
@@ -285,7 +285,7 @@ export default function ConciliacionDemo({ apiUrl }) {
 
               {/* Expanded: show match details */}
               {isExp && (
-                <div className="px-5 pb-3 bg-[#0000FF]/10 border-t border-[#EDEFFE]/10">
+                <div className="px-5 pb-3 bg-[#1e22aa]/10 border-t border-[#EDEFFE]/10">
                   {s.posiblesConciliaciones.map((pc, j) => (
                     <div key={j} className="mt-3 border border-[#EDEFFE]/20 p-3">
                       <div className="flex items-center gap-2 mb-2">
@@ -325,14 +325,14 @@ export default function ConciliacionDemo({ apiUrl }) {
           <h2 className="font-display text-3xl uppercase">// RESULTADO</h2>
           <button
             onClick={downloadExcel}
-            className="flex items-center gap-2 px-4 py-2 bg-[#EDEFFE] text-[#0000FF] font-bold text-sm uppercase border-2 border-[#EDEFFE] hover:bg-[#0000FF] hover:text-[#EDEFFE] transition-all shadow-[4px_4px_0_#0000FF] hover:shadow-none"
+            className="flex items-center gap-2 px-4 py-2 bg-[#EDEFFE] text-[#1e22aa] font-bold text-sm uppercase border-2 border-[#EDEFFE] hover:bg-[#1e22aa] hover:text-[#EDEFFE] transition-all shadow-[4px_4px_0_#1e22aa] hover:shadow-none"
           >
             <Download className="w-4 h-4" /> Descargar Excel
           </button>
         </div>
 
         {/* Main metric */}
-        <div className="border-2 border-[#EDEFFE] p-6 mb-4 text-center shadow-[8px_8px_0_#0000FF]">
+        <div className="border-2 border-[#EDEFFE] p-6 mb-4 text-center shadow-[8px_8px_0_#1e22aa]">
           <div className="font-display text-7xl text-[#EDEFFE] mb-1">
             {stats.porcentajeConciliacionesRealizadas}%
           </div>

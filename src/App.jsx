@@ -75,7 +75,7 @@ export default function App() {
 
   if (activeDemo) {
     return (
-      <div className="min-h-screen bg-[#0000FF] font-sans text-[#EDEFFE] selection:bg-[#EDEFFE] selection:text-[#0000FF]">
+      <div className="min-h-screen bg-[#1e22aa] font-sans text-[#EDEFFE] selection:bg-[#EDEFFE] selection:text-[#1e22aa]">
         <style>{fontStyles}</style>
 
         {isGuest && (
@@ -87,10 +87,10 @@ export default function App() {
           </div>
         )}
 
-        <header className="bg-[#0000FF] border-b-2 border-[#EDEFFE] sticky top-0 z-50 p-3 md:p-4 flex justify-between items-center gap-2">
+        <header className="bg-[#1e22aa] border-b-2 border-[#EDEFFE] sticky top-0 z-50 p-3 md:p-4 flex justify-between items-center gap-2">
           <button
             onClick={() => { setActiveDemo(null); setDemoExpanded(false); }}
-            className="flex items-center gap-1 md:gap-2 font-sans font-bold uppercase text-xs md:text-sm bg-[#EDEFFE] text-[#0000FF] px-3 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] hover:border-[#EDEFFE] border-2 border-[#EDEFFE] transition-colors shadow-[2px_2px_0_#1F1F1F] md:shadow-[4px_4px_0_#1F1F1F] flex-shrink-0"
+            className="flex items-center gap-1 md:gap-2 font-sans font-bold uppercase text-xs md:text-sm bg-[#EDEFFE] text-[#1e22aa] px-3 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] hover:border-[#EDEFFE] border-2 border-[#EDEFFE] transition-colors shadow-[2px_2px_0_#1F1F1F] md:shadow-[4px_4px_0_#1F1F1F] flex-shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Volver al Hub</span>
@@ -115,7 +115,7 @@ export default function App() {
 
         <main className="max-w-[1600px] mx-auto p-4 md:p-8 flex flex-col xl:flex-row gap-6 md:gap-8 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)] overflow-x-hidden">
           <section className="flex-[3] flex flex-col border-2 border-[#EDEFFE] bg-[#1F1F1F] shadow-[6px_6px_0_#EDEFFE] md:shadow-[12px_12px_0_#EDEFFE] min-h-[50vh] xl:min-h-0">
-            <div className="border-b-2 border-[#EDEFFE] bg-[#0000FF] p-2 md:p-3 flex justify-between items-center">
+            <div className="border-b-2 border-[#EDEFFE] bg-[#1e22aa] p-2 md:p-3 flex justify-between items-center">
               <div className="flex gap-2 items-center">
                 <div className="w-2 h-2 md:w-3 md:h-3 bg-[#EDEFFE] rounded-full animate-pulse flex-shrink-0"></div>
                 <span className="font-display text-lg md:text-xl text-[#EDEFFE] tracking-widest truncate">{activeDemo.title}.exe</span>
@@ -148,7 +148,7 @@ export default function App() {
                   <div className="absolute inset-0 opacity-10 font-display text-xs md:text-sm leading-tight break-all select-none text-[#EDEFFE] pointer-events-none overflow-hidden">
                     {("1010101011110001010101010101010111010100001010101010101010101010101010101010101 ").repeat(200)}
                   </div>
-                  <Terminal className="w-16 h-16 md:w-24 md:h-24 text-[#0000FF] mb-4 md:mb-6 relative z-10" />
+                  <Terminal className="w-16 h-16 md:w-24 md:h-24 text-[#1e22aa] mb-4 md:mb-6 relative z-10" />
                   <h2 className="font-display text-3xl md:text-5xl text-[#EDEFFE] uppercase text-center relative z-10 mb-2 md:mb-4">
                     [ ESPACIO INTERACTIVO ]
                   </h2>
@@ -162,21 +162,21 @@ export default function App() {
 
           {!demoExpanded && <aside className="flex-1 flex flex-col gap-6 xl:overflow-y-auto pb-8 xl:pb-0">
             <div className="bg-[#EDEFFE] border-2 border-[#1F1F1F] p-4 md:p-6 shadow-[6px_6px_0_#1F1F1F] md:shadow-[8px_8px_0_#1F1F1F]">
-              <h1 className="font-display text-4xl md:text-5xl text-[#0000FF] uppercase leading-[0.8] mb-4">
+              <h1 className="font-display text-4xl md:text-5xl text-[#1e22aa] uppercase leading-[0.8] mb-4">
                 {activeDemo.title}
               </h1>
               <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
                 <span className="bg-[#1F1F1F] text-[#EDEFFE] text-[10px] md:text-xs font-bold px-2 py-1 uppercase border-2 border-[#1F1F1F]">
                   {activeDemo.vertical}
                 </span>
-                <span className="bg-[#0000FF] text-[#EDEFFE] text-[10px] md:text-xs font-display px-2 py-1 tracking-widest uppercase border-2 border-[#0000FF]">
+                <span className="bg-[#1e22aa] text-[#EDEFFE] text-[10px] md:text-xs font-display px-2 py-1 tracking-widest uppercase border-2 border-[#1e22aa]">
                   {activeDemo.tech}
                 </span>
               </div>
               <p className="font-sans text-xs md:text-sm font-medium text-[#1F1F1F] leading-relaxed mb-4 md:mb-6">
                 {activeDemo.description}
               </p>
-              <div className="bg-[#0000FF] p-3 md:p-4 border-2 border-[#1F1F1F]">
+              <div className="bg-[#1e22aa] p-3 md:p-4 border-2 border-[#1F1F1F]">
                 <h4 className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-[#EDEFFE] uppercase tracking-widest mb-1 md:mb-2">
                   {'>'} OBJETIVO PRINCIPAL
                 </h4>
@@ -198,8 +198,8 @@ export default function App() {
                   return (
                     <li key={idx} className="flex items-start gap-2 md:gap-3 border-b border-[#EDEFFE]/20 pb-2 md:pb-3 last:border-0 last:pb-0">
                       <span className={`font-display text-base md:text-lg px-2 py-0.5 border flex-shrink-0 leading-none ${
-                        isUp ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]' :
-                        isDown ? 'bg-[#0000FF] text-[#EDEFFE] border-[#0000FF]' :
+                        isUp ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]' :
+                        isDown ? 'bg-[#1e22aa] text-[#EDEFFE] border-[#1e22aa]' :
                         'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE]'
                       }`}>
                         {isUp ? '↑' : isDown ? '↓' : '>'}
@@ -217,7 +217,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0000FF] font-sans text-[#EDEFFE] selection:bg-[#EDEFFE] selection:text-[#0000FF]">
+    <div className="min-h-screen bg-[#1e22aa] font-sans text-[#EDEFFE] selection:bg-[#EDEFFE] selection:text-[#1e22aa]">
       <style>{fontStyles}</style>
 
       {/* Banner invitado */}
@@ -231,7 +231,7 @@ export default function App() {
         </div>
       )}
 
-      <header className="bg-[#0000FF] border-b-2 border-[#EDEFFE] sticky top-0 z-50">
+      <header className="bg-[#1e22aa] border-b-2 border-[#EDEFFE] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
           <div className="flex flex-col items-start w-full md:w-auto">
             <img src="/logo.png" alt="RESTART Logo" className="h-10 md:h-12 w-auto object-contain" />
@@ -240,8 +240,8 @@ export default function App() {
             </span>
           </div>
 
-          <div className="flex w-full md:w-96 border-2 border-[#EDEFFE] bg-[#0000FF] focus-within:border-[#EDEFFE] transition-colors relative group shadow-[4px_4px_0_#1F1F1F]">
-            <span className="bg-[#EDEFFE] text-[#0000FF] p-2 flex items-center justify-center">
+          <div className="flex w-full md:w-96 border-2 border-[#EDEFFE] bg-[#1e22aa] focus-within:border-[#EDEFFE] transition-colors relative group shadow-[4px_4px_0_#1F1F1F]">
+            <span className="bg-[#EDEFFE] text-[#1e22aa] p-2 flex items-center justify-center">
               <Search className="h-5 w-5" />
             </span>
             <input
@@ -266,7 +266,7 @@ export default function App() {
             {!isGuest && (
               <button
                 onClick={() => setShowShare(true)}
-                className="flex items-center gap-2 font-sans font-bold uppercase text-xs bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] px-4 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[3px_3px_0_#1F1F1F]"
+                className="flex items-center gap-2 font-sans font-bold uppercase text-xs bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] px-4 py-2 hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[3px_3px_0_#1F1F1F]"
               >
                 <Share2 className="h-4 w-4" />
                 <span className="hidden sm:inline">Compartir</span>
@@ -283,19 +283,19 @@ export default function App() {
         </div>
       </header>
 
-      <div className="bg-[#0000FF] text-[#EDEFFE] border-b-2 border-[#EDEFFE] relative overflow-hidden flex items-center min-h-[40vh]">
+      <div className="bg-[#1e22aa] text-[#EDEFFE] border-b-2 border-[#EDEFFE] relative overflow-hidden flex items-center min-h-[40vh]">
         <div className="absolute inset-0 opacity-20 font-display text-xl leading-none break-all select-none overflow-hidden text-[#EDEFFE]">
           {("010010111011001001101001110001110101111011010101101111100111100110001101010100100111001010 ").repeat(150)}
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
           <div className="font-display text-[#EDEFFE] text-lg mb-4 flex items-center gap-2">
             <span className="bg-[#1F1F1F] px-2 py-0.5 border border-[#EDEFFE]">/*</span>
-            <span className="uppercase tracking-widest bg-[#0000FF] px-2 border border-[#EDEFFE]">Vayamos más profundo</span>
+            <span className="uppercase tracking-widest bg-[#1e22aa] px-2 border border-[#EDEFFE]">Vayamos más profundo</span>
           </div>
           <h1 className="font-display text-7xl md:text-9xl uppercase leading-[0.85] mb-6">
             SOLUCIONES<br/>DE NEGOCIO
           </h1>
-          <p className="font-sans text-lg md:text-xl font-medium max-w-2xl border-l-4 border-[#EDEFFE] pl-6 py-2 bg-[#0000FF]/50 backdrop-blur-sm">
+          <p className="font-sans text-lg md:text-xl font-medium max-w-2xl border-l-4 border-[#EDEFFE] pl-6 py-2 bg-[#1e22aa]/50 backdrop-blur-sm">
             Donde los procesos se vuelven inteligencia.<br/>
             IA pensada juntos, diseñada a medida.
           </p>
@@ -304,7 +304,7 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-8">
         <aside className="w-full md:w-64 flex-shrink-0">
-          <div className="sticky top-28 bg-[#0000FF] border-2 border-[#EDEFFE] p-4 shadow-[6px_6px_0_#1F1F1F]">
+          <div className="sticky top-28 bg-[#1e22aa] border-2 border-[#EDEFFE] p-4 shadow-[6px_6px_0_#1F1F1F]">
             <div className="border-b-2 border-[#EDEFFE] pb-2 mb-6 flex justify-between items-end">
               <h2 className="font-display text-3xl uppercase text-[#EDEFFE]">///__FILTROS</h2>
               <Filter className="h-6 w-6 text-[#EDEFFE]" />
@@ -319,8 +319,8 @@ export default function App() {
                   onClick={() => setSelectedVertical(vertical)}
                   className={`text-left px-4 py-3 text-sm font-bold uppercase transition-all border-2 ${
                     selectedVertical === vertical
-                      ? "bg-[#EDEFFE] border-[#EDEFFE] text-[#0000FF] translate-x-2 shadow-[4px_4px_0_#1F1F1F]"
-                      : "bg-[#0000FF] border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF]"
+                      ? "bg-[#EDEFFE] border-[#EDEFFE] text-[#1e22aa] translate-x-2 shadow-[4px_4px_0_#1F1F1F]"
+                      : "bg-[#1e22aa] border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa]"
                   }`}
                 >
                   {selectedVertical === vertical ? `[ ${vertical} ]` : vertical}
@@ -335,19 +335,19 @@ export default function App() {
             <h2 className="font-display text-4xl uppercase text-[#EDEFFE]">
               <span className="text-[#1F1F1F] bg-[#EDEFFE] px-1 mr-2">{'>>>>'}</span> DEMOS ACTIVAS
             </h2>
-            <span className="font-display text-xl text-[#0000FF] bg-[#EDEFFE] px-2 py-1 shadow-[3px_3px_0_#1F1F1F]">
+            <span className="font-display text-xl text-[#1e22aa] bg-[#EDEFFE] px-2 py-1 shadow-[3px_3px_0_#1F1F1F]">
               [{filteredDemos.length}]
             </span>
           </div>
 
           {filteredDemos.length === 0 ? (
-            <div className="border-2 border-dashed border-[#EDEFFE] p-16 text-center bg-[#0000FF] shadow-[8px_8px_0_#1F1F1F]">
+            <div className="border-2 border-dashed border-[#EDEFFE] p-16 text-center bg-[#1e22aa] shadow-[8px_8px_0_#1F1F1F]">
               <Terminal className="mx-auto h-16 w-16 text-[#EDEFFE] mb-4" />
               <h3 className="font-display text-4xl uppercase text-[#EDEFFE] mb-2">ERROR 404_</h3>
               <p className="font-sans font-medium text-[#EDEFFE]/80">No se encontraron resultados para los parámetros actuales.</p>
               <button
                 onClick={() => { setSearchTerm(""); setSelectedVertical("Todas"); }}
-                className="mt-6 bg-[#EDEFFE] text-[#0000FF] font-sans font-bold py-2 px-6 uppercase text-sm hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors border-2 border-[#EDEFFE] shadow-[4px_4px_0_#1F1F1F]"
+                className="mt-6 bg-[#EDEFFE] text-[#1e22aa] font-sans font-bold py-2 px-6 uppercase text-sm hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors border-2 border-[#EDEFFE] shadow-[4px_4px_0_#1F1F1F]"
               >
                 Reiniciar Búsqueda
               </button>
@@ -364,7 +364,7 @@ export default function App() {
                     }`}
                   >
                     <div className={`h-32 relative p-4 flex flex-col justify-between overflow-hidden border-b-2 ${
-                      isDark ? 'bg-[#0000FF] border-[#EDEFFE]' : 'bg-[#1F1F1F] border-[#1F1F1F]'
+                      isDark ? 'bg-[#1e22aa] border-[#EDEFFE]' : 'bg-[#1F1F1F] border-[#1F1F1F]'
                     }`}>
                       <div className="absolute inset-0 opacity-20" style={{
                         backgroundImage: 'linear-gradient(#EDEFFE 1px, transparent 1px), linear-gradient(90deg, #EDEFFE 1px, transparent 1px)',
@@ -377,7 +377,7 @@ export default function App() {
                           {demo.vertical}
                         </span>
                         <span className={`text-xs font-display px-2 py-1 tracking-widest uppercase border-2 ${
-                          isDark ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]' : 'bg-[#0000FF] text-[#EDEFFE] border-[#0000FF]'
+                          isDark ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]' : 'bg-[#1e22aa] text-[#EDEFFE] border-[#1e22aa]'
                         }`}>
                           {demo.tech}
                         </span>
@@ -407,7 +407,7 @@ export default function App() {
                           </p>
                         </div>
                         <div className={`p-4 border-2 relative ${
-                          isDark ? 'bg-[#EDEFFE] text-[#1F1F1F] border-[#EDEFFE] shadow-[4px_4px_0_#0000FF]' : 'bg-[#0000FF] text-[#EDEFFE] border-[#1F1F1F] shadow-[4px_4px_0_#1F1F1F]'
+                          isDark ? 'bg-[#EDEFFE] text-[#1F1F1F] border-[#EDEFFE] shadow-[4px_4px_0_#1e22aa]' : 'bg-[#1e22aa] text-[#EDEFFE] border-[#1F1F1F] shadow-[4px_4px_0_#1F1F1F]'
                         }`}>
                           <div className="absolute top-0 right-0 bg-[#1F1F1F] text-[#EDEFFE] text-[10px] px-1 font-display">KPI_</div>
                           <h4 className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-2 ${
@@ -415,7 +415,7 @@ export default function App() {
                           }`}>
                             {'>'} Impacto
                           </h4>
-                          <p className={`text-sm font-bold ${isDark ? 'text-[#0000FF]' : 'text-[#EDEFFE]'}`}>
+                          <p className={`text-sm font-bold ${isDark ? 'text-[#1e22aa]' : 'text-[#EDEFFE]'}`}>
                             {demo.objective}
                           </p>
                         </div>
@@ -427,8 +427,8 @@ export default function App() {
                         onClick={() => setActiveDemo(demo)}
                         className={`flex-1 font-sans font-bold text-sm uppercase py-4 px-4 transition-colors flex justify-center items-center gap-2 border-r-2 ${
                           isDark
-                            ? 'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF]'
-                            : 'bg-[#1F1F1F] text-[#EDEFFE] border-[#1F1F1F] hover:bg-[#0000FF] hover:text-[#EDEFFE]'
+                            ? 'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa]'
+                            : 'bg-[#1F1F1F] text-[#EDEFFE] border-[#1F1F1F] hover:bg-[#1e22aa] hover:text-[#EDEFFE]'
                         }`}
                       >
                         <Play className="h-4 w-4" /> Ejecutar Demo
@@ -437,7 +437,7 @@ export default function App() {
                         onClick={() => setActiveDemo(demo)}
                         className={`flex-none py-4 px-6 transition-colors flex justify-center items-center ${
                           isDark
-                            ? 'bg-[#1F1F1F] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF]'
+                            ? 'bg-[#1F1F1F] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa]'
                             : 'bg-[#EDEFFE] text-[#1F1F1F] hover:bg-[#1F1F1F] hover:text-[#EDEFFE]'
                         }`}
                       >

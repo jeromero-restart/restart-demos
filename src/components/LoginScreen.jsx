@@ -60,14 +60,14 @@ export default function LoginScreen({ initialError }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0000FF] font-sans text-[#EDEFFE] flex flex-col items-center justify-center relative overflow-hidden selection:bg-[#EDEFFE] selection:text-[#0000FF]">
+    <div className="min-h-screen bg-[#1e22aa] font-sans text-[#EDEFFE] flex flex-col items-center justify-center relative overflow-hidden selection:bg-[#EDEFFE] selection:text-[#1e22aa]">
       <style>{fontStyles}</style>
       <div className="absolute inset-0 opacity-10 font-display text-xs leading-tight break-all select-none text-[#EDEFFE] pointer-events-none overflow-hidden">
         {("010010111011001001101001110001110101111011010101101111100111100110001101010100100111001010 ").repeat(200)}
       </div>
 
       <div className="relative z-10 w-full max-w-md px-4">
-        <div className="bg-[#0000FF] border-2 border-[#EDEFFE] shadow-[8px_8px_0_#1F1F1F]">
+        <div className="bg-[#1e22aa] border-2 border-[#EDEFFE] shadow-[8px_8px_0_#1F1F1F]">
 
           {/* Header */}
           <div className="bg-[#1F1F1F] border-b-2 border-[#EDEFFE] p-3 flex justify-between items-center">
@@ -91,13 +91,13 @@ export default function LoginScreen({ initialError }) {
             <div className="w-full flex border-2 border-[#EDEFFE]">
               <button
                 onClick={() => { setMode('google'); setError(null); }}
-                className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${mode === 'google' ? 'bg-[#EDEFFE] text-[#0000FF]' : 'bg-transparent text-[#EDEFFE] hover:bg-[#EDEFFE]/10'}`}
+                className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${mode === 'google' ? 'bg-[#EDEFFE] text-[#1e22aa]' : 'bg-transparent text-[#EDEFFE] hover:bg-[#EDEFFE]/10'}`}
               >
                 Cuenta corporativa
               </button>
               <button
                 onClick={() => { setMode('guest'); setError(null); }}
-                className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest border-l-2 border-[#EDEFFE] transition-colors ${mode === 'guest' ? 'bg-[#EDEFFE] text-[#0000FF]' : 'bg-transparent text-[#EDEFFE] hover:bg-[#EDEFFE]/10'}`}
+                className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest border-l-2 border-[#EDEFFE] transition-colors ${mode === 'guest' ? 'bg-[#EDEFFE] text-[#1e22aa]' : 'bg-transparent text-[#EDEFFE] hover:bg-[#EDEFFE]/10'}`}
               >
                 Código de acceso
               </button>
@@ -112,7 +112,7 @@ export default function LoginScreen({ initialError }) {
                 <button
                   onClick={() => handleGoogleLogin()}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] px-6 py-4 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-3 bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] px-6 py-4 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <GoogleIcon />
                   {loading ? 'Verificando...' : 'Continuar con Google'}
@@ -137,7 +137,7 @@ export default function LoginScreen({ initialError }) {
                 <button
                   type="submit"
                   disabled={loading || !code.trim()}
-                  className="w-full bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] px-6 py-4 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] px-6 py-4 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Verificando...' : '> Acceder'}
                 </button>

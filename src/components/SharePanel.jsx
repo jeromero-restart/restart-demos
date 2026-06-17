@@ -48,7 +48,7 @@ export default function SharePanel({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1F1F]/80 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[#0000FF] border-2 border-[#EDEFFE] shadow-[12px_12px_0_#1F1F1F] max-h-[90vh] flex flex-col">
+      <div className="w-full max-w-lg bg-[#1e22aa] border-2 border-[#EDEFFE] shadow-[12px_12px_0_#1F1F1F] max-h-[90vh] flex flex-col">
 
         {/* Header */}
         <div className="bg-[#1F1F1F] border-b-2 border-[#EDEFFE] p-3 flex justify-between items-center flex-shrink-0">
@@ -56,7 +56,7 @@ export default function SharePanel({ onClose }) {
             <div className="w-3 h-3 bg-[#EDEFFE] rounded-full animate-pulse"></div>
             <span className="font-display text-lg text-[#EDEFFE] tracking-widest">///_GENERAR_ACCESO</span>
           </div>
-          <button onClick={onClose} className="text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] p-1 transition-colors">
+          <button onClick={onClose} className="text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa] p-1 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -70,13 +70,13 @@ export default function SharePanel({ onClose }) {
                 <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-[#EDEFFE]/70 mb-3">&gt; Demos permitidas</h3>
                 <button
                   onClick={() => setAllDemos(true)}
-                  className={`w-full text-left px-4 py-3 text-sm font-bold uppercase border-2 mb-2 transition-all ${allDemos ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]' : 'bg-transparent text-[#EDEFFE] border-[#EDEFFE]/40 hover:border-[#EDEFFE]'}`}
+                  className={`w-full text-left px-4 py-3 text-sm font-bold uppercase border-2 mb-2 transition-all ${allDemos ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]' : 'bg-transparent text-[#EDEFFE] border-[#EDEFFE]/40 hover:border-[#EDEFFE]'}`}
                 >
                   {allDemos ? '[ Todas las demos ]' : 'Todas las demos'}
                 </button>
                 <button
                   onClick={() => setAllDemos(false)}
-                  className={`w-full text-left px-4 py-3 text-sm font-bold uppercase border-2 mb-3 transition-all ${!allDemos ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]' : 'bg-transparent text-[#EDEFFE] border-[#EDEFFE]/40 hover:border-[#EDEFFE]'}`}
+                  className={`w-full text-left px-4 py-3 text-sm font-bold uppercase border-2 mb-3 transition-all ${!allDemos ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]' : 'bg-transparent text-[#EDEFFE] border-[#EDEFFE]/40 hover:border-[#EDEFFE]'}`}
                 >
                   {!allDemos ? '[ Seleccionar demos ]' : 'Seleccionar demos'}
                 </button>
@@ -89,7 +89,7 @@ export default function SharePanel({ onClose }) {
                           onClick={() => toggleDemo(demo.id)}
                           className={`mt-0.5 w-4 h-4 border-2 flex-shrink-0 flex items-center justify-center transition-colors cursor-pointer ${selectedDemos.includes(demo.id) ? 'bg-[#EDEFFE] border-[#EDEFFE]' : 'border-[#EDEFFE]/50 hover:border-[#EDEFFE]'}`}
                         >
-                          {selectedDemos.includes(demo.id) && <span className="text-[#0000FF] text-xs font-bold leading-none">✓</span>}
+                          {selectedDemos.includes(demo.id) && <span className="text-[#1e22aa] text-xs font-bold leading-none">✓</span>}
                         </div>
                         <span
                           onClick={() => toggleDemo(demo.id)}
@@ -111,7 +111,7 @@ export default function SharePanel({ onClose }) {
                     <button
                       key={d.value}
                       onClick={() => setDuration(d.value)}
-                      className={`py-2 text-xs font-bold uppercase border-2 transition-all ${duration === d.value ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]' : 'bg-transparent text-[#EDEFFE] border-[#EDEFFE]/40 hover:border-[#EDEFFE]'}`}
+                      className={`py-2 text-xs font-bold uppercase border-2 transition-all ${duration === d.value ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]' : 'bg-transparent text-[#EDEFFE] border-[#EDEFFE]/40 hover:border-[#EDEFFE]'}`}
                     >
                       {d.label}
                     </button>
@@ -134,7 +134,7 @@ export default function SharePanel({ onClose }) {
               <button
                 onClick={handleGenerate}
                 disabled={!canGenerate || generating}
-                className="w-full bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] py-4 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] py-4 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {generating ? 'Generando...' : '> Generar código'}
               </button>
@@ -149,7 +149,7 @@ export default function SharePanel({ onClose }) {
 
               <button
                 onClick={() => copyToClipboard(token, 'code')}
-                className="w-full flex items-center justify-center gap-2 bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] py-3 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F]"
+                className="w-full flex items-center justify-center gap-2 bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] py-3 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F]"
               >
                 {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copiedCode ? 'Copiado!' : 'Copiar código'}
@@ -157,7 +157,7 @@ export default function SharePanel({ onClose }) {
 
               <button
                 onClick={() => copyToClipboard(guestLink, 'link')}
-                className="w-full flex items-center justify-center gap-2 bg-transparent text-[#EDEFFE] border-2 border-[#EDEFFE] py-3 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors"
+                className="w-full flex items-center justify-center gap-2 bg-transparent text-[#EDEFFE] border-2 border-[#EDEFFE] py-3 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-colors"
               >
                 {copiedLink ? <Check className="w-4 h-4" /> : <Link className="w-4 h-4" />}
                 {copiedLink ? 'Link copiado!' : 'Copiar link directo'}

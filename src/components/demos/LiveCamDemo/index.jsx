@@ -81,7 +81,7 @@ export default function LiveCamDemo({ apiUrl }) {
       const c = toC(pt);
       ctx.beginPath();
       ctx.arc(c.x, c.y, i === 0 ? 7 : 5, 0, Math.PI * 2);
-      ctx.fillStyle = i === 0 ? '#EDEFFE' : '#0000FF';
+      ctx.fillStyle = i === 0 ? '#EDEFFE' : '#1e22aa';
       ctx.strokeStyle = '#EDEFFE';
       ctx.lineWidth = 2;
       ctx.fill();
@@ -196,7 +196,7 @@ export default function LiveCamDemo({ apiUrl }) {
         <p className="font-sans text-sm mb-4">{error}</p>
         <button
           onClick={() => { setError(null); setStep('cameras'); }}
-          className="px-4 py-2 bg-[#EDEFFE] text-[#0000FF] font-bold text-xs uppercase border-2 border-[#EDEFFE]"
+          className="px-4 py-2 bg-[#EDEFFE] text-[#1e22aa] font-bold text-xs uppercase border-2 border-[#EDEFFE]"
         >
           Volver
         </button>
@@ -219,11 +219,11 @@ export default function LiveCamDemo({ apiUrl }) {
           <button
             key={cam.id}
             onClick={() => { setSelectedCamera(cam); setStep('config'); }}
-            className="text-left border-2 border-[#EDEFFE] bg-[#1F1F1F] p-4 hover:bg-[#0000FF] hover:shadow-[6px_6px_0_#EDEFFE] transition-all group"
+            className="text-left border-2 border-[#EDEFFE] bg-[#1F1F1F] p-4 hover:bg-[#1e22aa] hover:shadow-[6px_6px_0_#EDEFFE] transition-all group"
           >
             <div className="flex justify-between items-start mb-3">
               <span className="font-display text-xl uppercase text-[#EDEFFE] group-hover:underline">{cam.name}</span>
-              <span className="text-[10px] font-bold bg-[#0000FF] group-hover:bg-[#1F1F1F] text-[#EDEFFE] border border-[#EDEFFE] px-2 py-0.5 uppercase">
+              <span className="text-[10px] font-bold bg-[#1e22aa] group-hover:bg-[#1F1F1F] text-[#EDEFFE] border border-[#EDEFFE] px-2 py-0.5 uppercase">
                 {cam.resolution}
               </span>
             </div>
@@ -244,7 +244,7 @@ export default function LiveCamDemo({ apiUrl }) {
     <div className="h-full flex flex-col lg:flex-row overflow-hidden">
       {/* Video + canvas */}
       <div className="flex-[2] relative bg-black border-b-2 lg:border-b-0 lg:border-r-2 border-[#EDEFFE] min-h-[280px] flex items-center justify-center overflow-hidden">
-        <div className="absolute top-3 left-3 right-3 z-20 bg-[#0000FF]/90 border border-[#EDEFFE] px-3 py-2 flex justify-between items-center">
+        <div className="absolute top-3 left-3 right-3 z-20 bg-[#1e22aa]/90 border border-[#EDEFFE] px-3 py-2 flex justify-between items-center">
           <span className="font-sans text-xs text-[#EDEFFE]">
             {!closed
               ? polygon.length === 0
@@ -303,7 +303,7 @@ export default function LiveCamDemo({ apiUrl }) {
                 onClick={() => setEntityType(et.id)}
                 className={`text-left px-3 py-2 text-xs font-bold uppercase border-2 transition-all ${
                   entityType === et.id
-                    ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]'
+                    ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]'
                     : 'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE]'
                 }`}
               >
@@ -325,7 +325,7 @@ export default function LiveCamDemo({ apiUrl }) {
                 onClick={() => handleTriggerTypeChange(tt.id)}
                 className={`text-left px-3 py-2 border-2 transition-all ${
                   triggerType === tt.id
-                    ? 'bg-[#0000FF] text-[#EDEFFE] border-[#0000FF]'
+                    ? 'bg-[#1e22aa] text-[#EDEFFE] border-[#1e22aa]'
                     : 'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE]'
                 }`}
               >
@@ -336,7 +336,7 @@ export default function LiveCamDemo({ apiUrl }) {
           </div>
 
           {/* Trigger params */}
-          <div className="border border-[#EDEFFE]/20 p-3 bg-[#0000FF]/10">
+          <div className="border border-[#EDEFFE]/20 p-3 bg-[#1e22aa]/10">
             {triggerType === 'count' && (
               <>
                 <label className="text-[10px] uppercase font-bold text-[#EDEFFE]/60 block mb-1">
@@ -380,7 +380,7 @@ export default function LiveCamDemo({ apiUrl }) {
                       onClick={() => setTriggerParams({ direction: d.id })}
                       className={`py-1.5 text-xs font-bold uppercase border-2 transition-all ${
                         triggerParams.direction === d.id
-                          ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]'
+                          ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]'
                           : 'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE]'
                       }`}
                     >
@@ -402,7 +402,7 @@ export default function LiveCamDemo({ apiUrl }) {
           disabled={!closed || submitting}
           className={`mt-auto flex items-center justify-center gap-2 py-3 px-4 font-bold text-sm uppercase border-2 transition-all ${
             closed && !submitting
-              ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE] hover:bg-[#0000FF] hover:text-[#EDEFFE] shadow-[4px_4px_0_#0000FF]'
+              ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE] hover:bg-[#1e22aa] hover:text-[#EDEFFE] shadow-[4px_4px_0_#1e22aa]'
               : 'bg-[#1F1F1F] text-[#EDEFFE]/30 border-[#EDEFFE]/20 cursor-not-allowed'
           }`}
         >
@@ -420,7 +420,7 @@ export default function LiveCamDemo({ apiUrl }) {
 
   if (step === 'live') return (
     <div className="h-full flex flex-col">
-      <div className="border-b-2 border-[#EDEFFE] bg-[#0000FF] px-4 py-2 flex justify-between items-center flex-shrink-0">
+      <div className="border-b-2 border-[#EDEFFE] bg-[#1e22aa] px-4 py-2 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse flex-shrink-0" />
           <span className="font-display text-lg uppercase text-[#EDEFFE] truncate">
@@ -450,12 +450,12 @@ export default function LiveCamDemo({ apiUrl }) {
 
         {/* Events panel */}
         <div className="w-full lg:w-64 xl:w-72 flex flex-col border-t-2 lg:border-t-0 lg:border-l-2 border-[#EDEFFE] bg-[#1F1F1F] overflow-hidden flex-shrink-0">
-          <div className="bg-[#0000FF] border-b border-[#EDEFFE]/30 px-4 py-2 flex-shrink-0">
+          <div className="bg-[#1e22aa] border-b border-[#EDEFFE]/30 px-4 py-2 flex-shrink-0">
             <h3 className="font-display text-base uppercase text-[#EDEFFE] flex items-center gap-2">
               <Zap className="w-4 h-4" />
               ALERTAS
               {events.length > 0 && (
-                <span className="bg-[#EDEFFE] text-[#0000FF] text-[10px] font-bold px-1.5 py-0.5 ml-auto">
+                <span className="bg-[#EDEFFE] text-[#1e22aa] text-[10px] font-bold px-1.5 py-0.5 ml-auto">
                   {events.length}
                 </span>
               )}
@@ -484,7 +484,7 @@ export default function LiveCamDemo({ apiUrl }) {
                   return (
                     <div
                       key={ev.event_id || i}
-                      className={`px-4 py-3 border-l-4 border-l-red-400 transition-colors ${i === 0 ? 'bg-[#0000FF]/30' : ''}`}
+                      className={`px-4 py-3 border-l-4 border-l-red-400 transition-colors ${i === 0 ? 'bg-[#1e22aa]/30' : ''}`}
                     >
                       <div className="flex justify-between items-center mb-1">
                         <span className="flex items-center gap-1.5 font-display text-sm uppercase text-red-400">

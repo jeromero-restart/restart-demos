@@ -216,7 +216,7 @@ export default function PerfiladorDemo({ apiUrl }) {
         <button
           onClick={active ? stop : start}
           disabled={connecting}
-          className="flex items-center gap-2 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-3 py-1.5 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {connecting ? <Loader2 className="w-3 h-3 animate-spin" /> : active ? <CameraOff className="w-3 h-3" /> : <Camera className="w-3 h-3" />}
           {connecting ? 'Conectando' : active ? 'Detener' : 'Activar cámara'}
@@ -255,7 +255,7 @@ export default function PerfiladorDemo({ apiUrl }) {
         {active && (
           <div className="absolute top-3 right-3 w-64 max-h-[calc(100%-1.5rem)] overflow-y-auto flex flex-col gap-2">
             {analytics && (
-              <div className="bg-[#0000FF]/85 border-2 border-[#EDEFFE] p-3 backdrop-blur-sm">
+              <div className="bg-[#1e22aa]/85 border-2 border-[#EDEFFE] p-3 backdrop-blur-sm">
                 <p className="font-display text-sm uppercase tracking-widest text-[#EDEFFE]/70 mb-2">/// Indicadores de tienda</p>
                 <div className="grid grid-cols-2 gap-2 text-[#EDEFFE] mb-2">
                   <Stat label="Visitantes únicos" value={analytics.unique_visitors} />

@@ -400,7 +400,7 @@ export default function AgentesDemo({ apiUrl }) {
             onClick={() => setTab(key)}
             className={`px-6 py-3 font-display text-sm uppercase tracking-wide transition-colors ${
               tab === key
-                ? 'bg-[#EDEFFE] text-[#0000FF]'
+                ? 'bg-[#EDEFFE] text-[#1e22aa]'
                 : 'text-[#EDEFFE]/60 hover:text-[#EDEFFE]'
             }`}
           >
@@ -437,7 +437,7 @@ export default function AgentesDemo({ apiUrl }) {
               const dc = lead.data_collection || {};
               const fields = Object.entries(dc);
               return (
-                <div key={lead.id} className="border-2 border-[#EDEFFE]/20 bg-[#0000FF]/10 flex flex-col">
+                <div key={lead.id} className="border-2 border-[#EDEFFE]/20 bg-[#1e22aa]/10 flex flex-col">
                   {/* Card header */}
                   <div className="px-4 py-3 border-b border-[#EDEFFE]/10 flex items-start justify-between gap-2">
                     <div>
@@ -549,12 +549,12 @@ export default function AgentesDemo({ apiUrl }) {
                     )}
                     {(transcripts[conv.id] || []).map((msg, i) => (
                       <div key={i} className={`flex gap-3 ${msg.role === 'agent' ? '' : 'flex-row-reverse'}`}>
-                        <span className={`text-[10px] font-bold uppercase flex-shrink-0 mt-1 w-12 ${msg.role === 'agent' ? 'text-[#EDEFFE]/40' : 'text-[#0000FF] text-right'}`}>
+                        <span className={`text-[10px] font-bold uppercase flex-shrink-0 mt-1 w-12 ${msg.role === 'agent' ? 'text-[#EDEFFE]/40' : 'text-[#1e22aa] text-right'}`}>
                           {msg.role === 'agent' ? 'Agente' : 'Cliente'}
                         </span>
                         <div className={`text-xs font-sans px-3 py-2 max-w-[75%] border ${
                           msg.role === 'agent'
-                            ? 'bg-[#0000FF]/20 border-[#EDEFFE]/20 text-[#EDEFFE]'
+                            ? 'bg-[#1e22aa]/20 border-[#EDEFFE]/20 text-[#EDEFFE]'
                             : 'bg-[#EDEFFE]/10 border-[#EDEFFE]/30 text-[#EDEFFE]'
                         }`}>
                           {msg.message}
@@ -588,15 +588,15 @@ export default function AgentesDemo({ apiUrl }) {
                 onClick={() => applyPreset(preset)}
                 className={`text-left p-3 border-2 transition-all ${
                   activePreset === preset.id
-                    ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE] shadow-[4px_4px_0_#0000FF]'
-                    : 'bg-[#0000FF]/10 text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE] hover:bg-[#0000FF]/20'
+                    ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE] shadow-[4px_4px_0_#1e22aa]'
+                    : 'bg-[#1e22aa]/10 text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE] hover:bg-[#1e22aa]/20'
                 }`}
               >
                 <div className="flex items-center gap-1.5 mb-1">
-                  <Zap className={`w-3 h-3 flex-shrink-0 ${activePreset === preset.id ? 'text-[#0000FF]' : 'text-[#EDEFFE]/50'}`} />
+                  <Zap className={`w-3 h-3 flex-shrink-0 ${activePreset === preset.id ? 'text-[#1e22aa]' : 'text-[#EDEFFE]/50'}`} />
                   <span className="font-display text-sm uppercase leading-tight">{preset.name}</span>
                 </div>
-                <p className={`font-sans text-[11px] leading-tight ${activePreset === preset.id ? 'text-[#0000FF]/70' : 'text-[#EDEFFE]/50'}`}>
+                <p className={`font-sans text-[11px] leading-tight ${activePreset === preset.id ? 'text-[#1e22aa]/70' : 'text-[#EDEFFE]/50'}`}>
                   {preset.description}
                 </p>
               </button>
@@ -632,7 +632,7 @@ export default function AgentesDemo({ apiUrl }) {
             value={prompt}
             onChange={e => { setPrompt(e.target.value); setActivePreset(null); }}
             rows={8}
-            className="w-full bg-[#0000FF]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-sans text-sm p-3 resize-none focus:outline-none transition-colors"
+            className="w-full bg-[#1e22aa]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-sans text-sm p-3 resize-none focus:outline-none transition-colors"
             placeholder="Describí el rol, objetivo y comportamiento del agente, o seleccioná un preset arriba..."
           />
           <div className="flex justify-end mt-1">
@@ -649,7 +649,7 @@ export default function AgentesDemo({ apiUrl }) {
             type="text"
             value={firstMessage}
             onChange={e => setFirstMessage(e.target.value)}
-            className="w-full bg-[#0000FF]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-sans text-sm px-3 py-2.5 focus:outline-none transition-colors"
+            className="w-full bg-[#1e22aa]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-sans text-sm px-3 py-2.5 focus:outline-none transition-colors"
             placeholder="Hola, te llamo de parte de..."
           />
           <p className="text-[10px] text-[#EDEFFE]/40 mt-1 font-sans">
@@ -680,7 +680,7 @@ export default function AgentesDemo({ apiUrl }) {
 
           <div className="flex flex-col gap-2">
             {dataCollection.map((f, i) => (
-              <div key={i} className="border border-[#EDEFFE]/20 bg-[#0000FF]/10 p-2 flex flex-col gap-1.5">
+              <div key={i} className="border border-[#EDEFFE]/20 bg-[#1e22aa]/10 p-2 flex flex-col gap-1.5">
                 <div className="flex items-center gap-1.5">
                   <Tag className="w-3 h-3 text-[#EDEFFE]/40 flex-shrink-0" />
                   <input
@@ -688,7 +688,7 @@ export default function AgentesDemo({ apiUrl }) {
                     value={f.identifier}
                     onChange={e => updateField(i, 'identifier', e.target.value)}
                     placeholder="identificador (ej. email)"
-                    className="flex-1 bg-[#0000FF]/20 border border-[#EDEFFE]/30 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-mono text-xs px-2 py-1 focus:outline-none"
+                    className="flex-1 bg-[#1e22aa]/20 border border-[#EDEFFE]/30 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-mono text-xs px-2 py-1 focus:outline-none"
                   />
                   <select
                     value={f.type}
@@ -712,7 +712,7 @@ export default function AgentesDemo({ apiUrl }) {
                   value={f.description}
                   onChange={e => updateField(i, 'description', e.target.value)}
                   placeholder="Instrucción de extracción para el modelo..."
-                  className="w-full bg-[#0000FF]/20 border border-[#EDEFFE]/20 focus:border-[#EDEFFE]/60 text-[#EDEFFE]/80 placeholder-[#EDEFFE]/30 font-sans text-[11px] px-2 py-1 focus:outline-none"
+                  className="w-full bg-[#1e22aa]/20 border border-[#EDEFFE]/20 focus:border-[#EDEFFE]/60 text-[#EDEFFE]/80 placeholder-[#EDEFFE]/30 font-sans text-[11px] px-2 py-1 focus:outline-none"
                 />
                 {f.enum && f.enum.length > 0 && (
                   <div className="flex flex-wrap gap-1 pl-1">
@@ -759,7 +759,7 @@ export default function AgentesDemo({ apiUrl }) {
                 onClick={() => setSelectedVoice(voice)}
                 className={`text-left p-3 border-2 transition-all ${
                   selectedVoice?.id === voice.id
-                    ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE] shadow-[4px_4px_0_#1F1F1F]'
+                    ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE] shadow-[4px_4px_0_#1F1F1F]'
                     : 'bg-[#1F1F1F] text-[#EDEFFE] border-[#EDEFFE]/30 hover:border-[#EDEFFE]'
                 }`}
               >
@@ -768,7 +768,7 @@ export default function AgentesDemo({ apiUrl }) {
                   <div className="flex items-center gap-1.5">
                     <span className={`text-[10px] font-bold border px-1.5 py-0.5 uppercase ${
                       selectedVoice?.id === voice.id
-                        ? 'border-[#0000FF] text-[#0000FF]'
+                        ? 'border-[#1e22aa] text-[#1e22aa]'
                         : 'border-[#EDEFFE]/30 text-[#EDEFFE]/50'
                     }`}>
                       {voice.gender}
@@ -780,10 +780,10 @@ export default function AgentesDemo({ apiUrl }) {
                         className={`p-1 border transition-colors ${
                           playingId === voice.id
                             ? selectedVoice?.id === voice.id
-                              ? 'border-[#0000FF] text-[#0000FF] bg-[#0000FF]/10'
+                              ? 'border-[#1e22aa] text-[#1e22aa] bg-[#1e22aa]/10'
                               : 'border-[#EDEFFE] text-[#EDEFFE] bg-[#EDEFFE]/10'
                             : selectedVoice?.id === voice.id
-                              ? 'border-[#0000FF]/40 text-[#0000FF]/60 hover:border-[#0000FF]'
+                              ? 'border-[#1e22aa]/40 text-[#1e22aa]/60 hover:border-[#1e22aa]'
                               : 'border-[#EDEFFE]/20 text-[#EDEFFE]/40 hover:border-[#EDEFFE]/60'
                         }`}
                       >
@@ -795,7 +795,7 @@ export default function AgentesDemo({ apiUrl }) {
                   </div>
                 </div>
                 <p className={`font-sans text-xs ${
-                  selectedVoice?.id === voice.id ? 'text-[#0000FF]/70' : 'text-[#EDEFFE]/60'
+                  selectedVoice?.id === voice.id ? 'text-[#1e22aa]/70' : 'text-[#EDEFFE]/60'
                 }`}>
                   {voice.description}
                 </p>
@@ -829,7 +829,7 @@ export default function AgentesDemo({ apiUrl }) {
             value={phone}
             onChange={e => setPhone(e.target.value)}
             placeholder="+54 11 1234-5678"
-            className="w-full bg-[#0000FF]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-display text-xl px-4 py-3 focus:outline-none tracking-widest transition-colors"
+            className="w-full bg-[#1e22aa]/20 border-2 border-[#EDEFFE]/40 focus:border-[#EDEFFE] text-[#EDEFFE] placeholder-[#EDEFFE]/30 font-display text-xl px-4 py-3 focus:outline-none tracking-widest transition-colors"
           />
           <p className="text-[10px] text-[#EDEFFE]/40 font-sans">Incluí el código de país (+54, +1, etc.)</p>
         </div>
@@ -840,7 +840,7 @@ export default function AgentesDemo({ apiUrl }) {
           disabled={!phone.trim() || !selectedVoice || callStatus === CALL_STATUS.CONFIGURING || callStatus === CALL_STATUS.CALLING}
           className={`flex items-center justify-center gap-3 py-4 px-6 font-bold text-base uppercase border-2 transition-all ${
             phone.trim() && selectedVoice && callStatus === CALL_STATUS.IDLE
-              ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE] hover:bg-[#0000FF] hover:text-[#EDEFFE] shadow-[4px_4px_0_#0000FF] hover:shadow-none'
+              ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE] hover:bg-[#1e22aa] hover:text-[#EDEFFE] shadow-[4px_4px_0_#1e22aa] hover:shadow-none'
               : 'bg-[#1F1F1F] text-[#EDEFFE]/30 border-[#EDEFFE]/20 cursor-not-allowed'
           }`}
         >
@@ -914,7 +914,7 @@ export default function AgentesDemo({ apiUrl }) {
             disabled={!selectedVoice || webStatus === 'connecting'}
             className={`flex items-center justify-center gap-3 py-4 px-6 font-bold text-base uppercase border-2 transition-all ${
               selectedVoice && webStatus === 'idle'
-                ? 'border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF]'
+                ? 'border-[#EDEFFE] text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa]'
                 : 'bg-[#1F1F1F] text-[#EDEFFE]/30 border-[#EDEFFE]/20 cursor-not-allowed'
             }`}
           >
@@ -933,7 +933,7 @@ export default function AgentesDemo({ apiUrl }) {
         {/* Language badge */}
         <div className="mt-auto pt-4 border-t border-[#EDEFFE]/10 flex items-center gap-2">
           <span className="text-[10px] font-bold uppercase text-[#EDEFFE]/40">Idioma fijo:</span>
-          <span className="text-[10px] font-bold uppercase bg-[#0000FF] text-[#EDEFFE] px-2 py-0.5 border border-[#EDEFFE]/30">
+          <span className="text-[10px] font-bold uppercase bg-[#1e22aa] text-[#EDEFFE] px-2 py-0.5 border border-[#EDEFFE]/30">
             Español
           </span>
         </div>

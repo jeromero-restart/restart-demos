@@ -50,7 +50,7 @@ function DownloadBtn({ onClick, label }) {
 
 function InfoCard({ label, value, sub }) {
   return (
-    <div className="border border-[#EDEFFE]/20 bg-[#0000FF]/20 p-3">
+    <div className="border border-[#EDEFFE]/20 bg-[#1e22aa]/20 p-3">
       <p className="font-sans text-[10px] font-bold uppercase text-[#EDEFFE]/40 tracking-widest mb-1">{label}</p>
       <p className="font-sans font-bold text-sm text-[#EDEFFE]">{value || '—'}</p>
       {sub && <p className="font-sans text-[10px] text-[#EDEFFE]/50 mt-0.5">{sub}</p>}
@@ -129,7 +129,7 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
   if (error || !record) return (
     <div className="h-full flex flex-col items-center justify-center gap-4 p-6">
       <p className="font-display text-2xl text-[#EDEFFE] uppercase">{error || 'Registro no encontrado'}</p>
-      <button onClick={onBack} className="flex items-center gap-2 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-4 py-2 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#0000FF] transition-colors">
+      <button onClick={onBack} className="flex items-center gap-2 text-xs font-bold uppercase border-2 border-[#EDEFFE] px-4 py-2 text-[#EDEFFE] hover:bg-[#EDEFFE] hover:text-[#1e22aa] transition-colors">
         <ArrowLeft className="w-4 h-4" /> Volver
       </button>
     </div>
@@ -193,7 +193,7 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
             </div>
 
             {/* Semáforo de validación */}
-            <div className={`border bg-[#0000FF]/10 ${STATUS[overall].ring}`}>
+            <div className={`border bg-[#1e22aa]/10 ${STATUS[overall].ring}`}>
               <div className="flex items-center justify-between px-3 py-2 border-b border-[#EDEFFE]/10">
                 <span className="font-display text-sm uppercase tracking-widest text-[#EDEFFE]/70">/// Validación</span>
                 <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${STATUS[overall].text}`}>
@@ -214,7 +214,7 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
 
             {/* Observaciones */}
             {observations.length > 0 && (
-              <div className="border border-[#EDEFFE]/20 bg-[#0000FF]/10 p-3">
+              <div className="border border-[#EDEFFE]/20 bg-[#1e22aa]/10 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="w-3 h-3 text-[#EDEFFE]/50 flex-shrink-0" />
                   <span className="font-sans text-[10px] font-bold uppercase text-[#EDEFFE]/50 tracking-widest">
@@ -251,7 +251,7 @@ export default function DetailView({ apiUrl, id, onBack, onExpandToggle }) {
                       <tr
                         key={i}
                         className={`border-b border-[#EDEFFE]/10 transition-colors hover:bg-[#EDEFFE]/5 ${
-                          isInvalidTime(r.entry_time, r.exit_time) ? 'bg-[#0000FF]/20' : ''
+                          isInvalidTime(r.entry_time, r.exit_time) ? 'bg-[#1e22aa]/20' : ''
                         }`}
                       >
                         <td className="py-2 px-2 font-display text-base text-[#EDEFFE] w-8">{r.day_index ?? '—'}</td>

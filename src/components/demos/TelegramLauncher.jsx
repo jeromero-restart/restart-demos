@@ -12,7 +12,7 @@ export default function TelegramLauncher({ botUrl, knowledgeBase = [] }) {
         <div className="flex flex-col sm:flex-row gap-4 items-start">
           <div className="flex-1 flex flex-col gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#0000FF] border-2 border-[#EDEFFE] flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-[#1e22aa] border-2 border-[#EDEFFE] flex items-center justify-center flex-shrink-0">
                 <MessageCircle className="w-5 h-5 text-[#EDEFFE]" />
               </div>
               <div>
@@ -24,7 +24,7 @@ export default function TelegramLauncher({ botUrl, knowledgeBase = [] }) {
               href={botUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] px-5 py-3 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] px-5 py-3 font-sans font-bold text-sm uppercase tracking-widest hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[4px_4px_0_#1F1F1F] w-full sm:w-auto"
             >
               <ExternalLink className="w-4 h-4" />
               Abrir en Telegram
@@ -51,7 +51,7 @@ export default function TelegramLauncher({ botUrl, knowledgeBase = [] }) {
 
             <div className="flex flex-col gap-4">
               {knowledgeBase.map((item, i) => (
-                <div key={i} className="border border-[#EDEFFE]/20 bg-[#0000FF]/10">
+                <div key={i} className="border border-[#EDEFFE]/20 bg-[#1e22aa]/10">
                   {/* Doc header */}
                   <div className="flex items-start gap-3 p-3 border-b border-[#EDEFFE]/10">
                     <FileText className="w-4 h-4 text-[#EDEFFE]/50 flex-shrink-0 mt-0.5" />
@@ -60,7 +60,7 @@ export default function TelegramLauncher({ botUrl, knowledgeBase = [] }) {
                       {item.roles?.length > 0 && (
                         <div className="flex gap-2 mt-1 flex-wrap">
                           {item.roles.map(r => (
-                            <span key={r} className="text-[9px] font-bold uppercase bg-[#0000FF] border border-[#EDEFFE]/30 text-[#EDEFFE]/70 px-1.5 py-0.5">
+                            <span key={r} className="text-[9px] font-bold uppercase bg-[#1e22aa] border border-[#EDEFFE]/30 text-[#EDEFFE]/70 px-1.5 py-0.5">
                               {r}
                             </span>
                           ))}

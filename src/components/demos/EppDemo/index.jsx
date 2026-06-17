@@ -132,12 +132,12 @@ export default function EppDemo({ apiUrl }) {
 
       {/* Panel de alertas */}
       <div className="w-full lg:w-72 xl:w-80 flex flex-col border-t-2 lg:border-t-0 lg:border-l-2 border-[#EDEFFE] bg-[#1F1F1F] flex-shrink-0">
-        <div className="bg-[#0000FF] border-b border-[#EDEFFE]/30 px-4 py-2 flex items-center gap-2 flex-shrink-0">
+        <div className="bg-[#1e22aa] border-b border-[#EDEFFE]/30 px-4 py-2 flex items-center gap-2 flex-shrink-0">
           <h3 className="font-display text-base uppercase text-[#EDEFFE] flex items-center gap-2 flex-1">
             <Zap className="w-4 h-4" /> Alertas
           </h3>
           {alerts.length > 0 && (
-            <span className="bg-[#EDEFFE] text-[#0000FF] text-[10px] font-bold px-1.5 py-0.5">{alerts.length}</span>
+            <span className="bg-[#EDEFFE] text-[#1e22aa] text-[10px] font-bold px-1.5 py-0.5">{alerts.length}</span>
           )}
         </div>
         <div className="flex-1 overflow-y-auto">
@@ -153,7 +153,7 @@ export default function EppDemo({ apiUrl }) {
                 const accent = fire ? 'border-l-orange-400' : 'border-l-red-400';
                 const color = fire ? 'text-orange-400' : 'text-red-400';
                 return (
-                  <div key={a.id} className={`px-4 py-3 border-l-4 ${accent} ${i === 0 ? 'bg-[#0000FF]/30' : ''}`}>
+                  <div key={a.id} className={`px-4 py-3 border-l-4 ${accent} ${i === 0 ? 'bg-[#1e22aa]/30' : ''}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className={`flex items-center gap-1.5 font-display text-sm uppercase ${color}`}>
                         {fire ? <Flame className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />} Alerta

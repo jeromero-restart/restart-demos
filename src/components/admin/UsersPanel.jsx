@@ -7,7 +7,7 @@ const ROLES = ['admin', 'usuario'];
 const RoleBadge = ({ role }) => (
   <span className={`flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 border ${
     role === 'admin'
-      ? 'bg-[#EDEFFE] text-[#0000FF] border-[#EDEFFE]'
+      ? 'bg-[#EDEFFE] text-[#1e22aa] border-[#EDEFFE]'
       : 'bg-transparent text-[#EDEFFE]/70 border-[#EDEFFE]/30'
   }`}>
     {role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
@@ -69,7 +69,7 @@ export default function UsersPanel({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1F1F]/80 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[#0000FF] border-2 border-[#EDEFFE] shadow-[12px_12px_0_#1F1F1F] max-h-[90vh] flex flex-col font-sans">
+      <div className="w-full max-w-lg bg-[#1e22aa] border-2 border-[#EDEFFE] shadow-[12px_12px_0_#1F1F1F] max-h-[90vh] flex flex-col font-sans">
 
         {/* Header */}
         <div className="bg-[#1F1F1F] border-b-2 border-[#EDEFFE] p-3 flex justify-between items-center flex-shrink-0">
@@ -110,7 +110,7 @@ export default function UsersPanel({ onClose }) {
               <button
                 type="submit"
                 disabled={adding || !newEmail.trim()}
-                className="bg-[#EDEFFE] text-[#0000FF] border-2 border-[#EDEFFE] px-4 py-2 font-bold text-sm uppercase hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[3px_3px_0_#1F1F1F] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                className="bg-[#EDEFFE] text-[#1e22aa] border-2 border-[#EDEFFE] px-4 py-2 font-bold text-sm uppercase hover:bg-[#1F1F1F] hover:text-[#EDEFFE] transition-colors shadow-[3px_3px_0_#1F1F1F] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -153,7 +153,7 @@ export default function UsersPanel({ onClose }) {
                       onChange={e => handleRoleChange(u.email, e.target.value)}
                       className="bg-transparent border border-[#EDEFFE]/30 text-[#EDEFFE] text-xs uppercase font-bold px-2 py-1 focus:outline-none focus:border-[#EDEFFE] transition-colors"
                     >
-                      {ROLES.map(r => <option key={r} value={r} className="bg-[#0000FF]">{r}</option>)}
+                      {ROLES.map(r => <option key={r} value={r} className="bg-[#1e22aa]">{r}</option>)}
                     </select>
                     <RoleBadge role={u.role} />
                     <button
