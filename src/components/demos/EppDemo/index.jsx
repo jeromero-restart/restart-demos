@@ -96,6 +96,8 @@ export default function EppDemo({ apiUrl }) {
   );
 
   const selected = selectedCam ? cameras.find((c) => c.id === selectedCam) : null;
+  // Solo las alertas de la cámara abierta.
+  const shownAlerts = selectedCam ? alerts.filter((a) => a.cam === selectedCam) : [];
 
   return (
     <div className="h-full flex flex-col lg:flex-row overflow-hidden">
@@ -169,19 +171,24 @@ export default function EppDemo({ apiUrl }) {
           <h3 className="font-display text-base uppercase text-[#EDEFFE] flex items-center gap-2 flex-1">
             <Zap className="w-4 h-4" /> Alertas
           </h3>
-          {alerts.length > 0 && (
-            <span className="bg-[#EDEFFE] text-[#1e22aa] text-[10px] font-bold px-1.5 py-0.5">{alerts.length}</span>
+          {shownAlerts.length > 0 && (
+            <span className="bg-[#EDEFFE] text-[#1e22aa] text-[10px] font-bold px-1.5 py-0.5">{shownAlerts.length}</span>
           )}
         </div>
         <div className="flex-1 overflow-y-auto">
-          {alerts.length === 0 ? (
+          {!selected ? (
             <div className="p-6 text-center text-[#EDEFFE]/40">
               <Eye className="w-8 h-8 mx-auto mb-3 opacity-40" />
-              <p className="font-sans text-xs leading-relaxed">Monitoreando…<br />Las alertas de EPP y fuego aparecerán aquí</p>
+              <p className="font-sans text-xs leading-relaxed">Seleccioná una cámara<br />para ver sus alertas</p>
+            </div>
+          ) : shownAlerts.length === 0 ? (
+            <div className="p-6 text-center text-[#EDEFFE]/40">
+              <Eye className="w-8 h-8 mx-auto mb-3 opacity-40" />
+              <p className="font-sans text-xs leading-relaxed">Monitoreando {metaFor(selected.id).label}…<br />Sin alertas por ahora</p>
             </div>
           ) : (
             <div className="divide-y divide-[#EDEFFE]/10">
-              {alerts.map((a, i) => {
+              {shownAlerts.map((a, i) => {
                 const fire = /smoke|fire/i.test(a.cls);
                 const accent = fire ? 'border-l-orange-400' : 'border-l-red-400';
                 const color = fire ? 'text-orange-400' : 'text-red-400';
