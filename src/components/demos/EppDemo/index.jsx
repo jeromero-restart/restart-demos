@@ -29,7 +29,23 @@ export default function EppDemo({ apiUrl }) {
   const [error, setError] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [selectedCam, setSelectedCam] = useState(null);
+  const [nonce, setNonce] = useState(0);         // fuerza reconexión del MJPEG al reabrir
   const lastAlertRef = useRef({});               // dedupe: `${cam}:${class}` -> ts
+
+  // Abrir una cámara: el backend la reinicia desde el frame 0 (on-demand) y pausa el resto.
+  const openCam = (id) => {
+    setAlerts((prev) => prev.filter((a) => a.cam !== id)); // limpia alertas viejas de esa cámara
+    lastAlertRef.current = {};
+    setSelectedCam(id);
+    setNonce(Date.now());
+    fetch(`${API}/select/${id}`, { method: 'POST' }).catch(() => {});
+  };
+
+  // Volver al selector: pausa todas (no corre ningún video / inferencia).
+  const backToSelector = () => {
+    setSelectedCam(null);
+    fetch(`${API}/deselect`, { method: 'POST' }).catch(() => {});
+  };
 
   // Poll de /health (lista de cámaras + estado + FPS)
   useEffect(() => {
@@ -116,7 +132,7 @@ export default function EppDemo({ apiUrl }) {
                 return (
                   <button
                     key={cam.id}
-                    onClick={() => setSelectedCam(cam.id)}
+                    onClick={() => openCam(cam.id)}
                     className={`group text-left border-2 ${meta.accent} bg-[#1F1F1F] p-4 flex flex-col gap-3 hover:bg-[#1e22aa]/20 transition-colors shadow-[4px_4px_0_#1F1F1F] hover:shadow-[6px_6px_0_#EDEFFE]`}
                   >
                     <div className="flex items-center justify-between">
@@ -143,7 +159,7 @@ export default function EppDemo({ apiUrl }) {
           <div className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-3">
               <button
-                onClick={() => setSelectedCam(null)}
+                onClick={backToSelector}
                 className="flex items-center gap-1.5 text-xs font-bold uppercase text-[#EDEFFE]/60 hover:text-[#EDEFFE] transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" /> Cámaras
@@ -156,7 +172,7 @@ export default function EppDemo({ apiUrl }) {
             </div>
             <div className={`flex-1 border-2 ${metaFor(selected.id).accent} bg-black flex items-center justify-center min-h-0`}>
               <img
-                src={`${API}/mjpeg/${selected.id}`}
+                src={`${API}/mjpeg/${selected.id}?t=${nonce}`}
                 alt={metaFor(selected.id).label}
                 className="max-w-full max-h-full object-contain"
               />
