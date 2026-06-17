@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AlertCircle, Loader, ShieldAlert, HardHat, Flame, Zap, Eye } from 'lucide-react';
+import { AlertCircle, Loader, ShieldAlert, HardHat, Flame, Zap, Eye, Maximize2, ArrowLeft } from 'lucide-react';
 
 // Metadatos de presentación por cámara (los ids vienen del backend /health).
 const CAM_META = {
-  'cam-no-helmet': { label: 'Personas sin casco', icon: ShieldAlert, accent: 'border-red-400',    critical: true },
-  'cam-helmet':    { label: 'Personas con casco', icon: HardHat,     accent: 'border-green-400' },
-  'cam-fire':      { label: 'Fuego / Humo',       icon: Flame,       accent: 'border-orange-400', critical: true },
+  'cam-helmet':    { label: 'Personas con casco', icon: HardHat,     accent: 'border-green-400',  dot: 'bg-green-400' },
+  'cam-fire':      { label: 'Fuego / Humo',       icon: Flame,       accent: 'border-orange-400', dot: 'bg-orange-400', critical: true },
+  'cam-no-helmet': { label: 'Personas sin casco', icon: ShieldAlert, accent: 'border-red-400',    dot: 'bg-red-400',    critical: true },
 };
-const metaFor = (id) => CAM_META[id] || { label: id, icon: Eye, accent: 'border-[#EDEFFE]/30' };
+const ORDER = ['cam-helmet', 'cam-fire', 'cam-no-helmet'];
+const metaFor = (id) => CAM_META[id] || { label: id, icon: Eye, accent: 'border-[#EDEFFE]/30', dot: 'bg-[#EDEFFE]/40' };
 
 const classLabel = (c) => {
   if (c === 'no_helmet') return 'Persona SIN casco';
@@ -27,6 +28,7 @@ export default function EppDemo({ apiUrl }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [alerts, setAlerts] = useState([]);
+  const [selectedCam, setSelectedCam] = useState(null);
   const lastAlertRef = useRef({});               // dedupe: `${cam}:${class}` -> ts
 
   // Poll de /health (lista de cámaras + estado + FPS)
@@ -40,7 +42,7 @@ export default function EppDemo({ apiUrl }) {
         if (!active) return;
         const cams = Object.entries(data.cameras || {})
           .map(([id, h]) => ({ id, state: h.state, fps: h.fps }))
-          .sort((a, b) => a.id.localeCompare(b.id));
+          .sort((a, b) => (ORDER.indexOf(a.id) - ORDER.indexOf(b.id)));
         setCameras(cams);
         setError(null);
         setLoading(false);
@@ -93,41 +95,72 @@ export default function EppDemo({ apiUrl }) {
     </div>
   );
 
+  const selected = selectedCam ? cameras.find((c) => c.id === selectedCam) : null;
+
   return (
     <div className="h-full flex flex-col lg:flex-row overflow-hidden">
-      {/* Grilla de cámaras */}
-      <div className="flex-[3] overflow-y-auto p-4">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {cameras.map((cam) => {
-            const meta = metaFor(cam.id);
-            const Icon = meta.icon;
-            const online = String(cam.state).toUpperCase() === 'CONNECTED';
-            return (
-              <div key={cam.id} className={`border-2 ${meta.accent} bg-black flex flex-col`}>
-                <div className="flex items-center justify-between px-3 py-2 bg-[#1F1F1F] border-b-2 border-inherit">
-                  <span className="flex items-center gap-2 font-display text-sm uppercase tracking-widest text-[#EDEFFE]">
-                    <Icon className="w-4 h-4" /> {meta.label}
-                    {meta.critical && <span className="text-[9px] font-bold uppercase border border-red-400 text-red-400 px-1">alarma</span>}
-                  </span>
-                  <span className="flex items-center gap-2 text-[10px] font-mono text-[#EDEFFE]/60">
-                    <span className={`w-2 h-2 rounded-full ${online ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-                    {online ? `${cam.fps?.toFixed?.(1) ?? cam.fps} fps` : 'offline'}
-                  </span>
-                </div>
-                <img
-                  src={`${API}/mjpeg/${cam.id}`}
-                  alt={meta.label}
-                  className="w-full aspect-video object-contain bg-black"
-                />
-              </div>
-            );
-          })}
-          {cameras.length === 0 && (
-            <p className="font-sans text-sm text-[#EDEFFE]/40 col-span-full text-center py-16">
-              No hay cámaras activas.
-            </p>
-          )}
-        </div>
+      {/* Área principal: selector o cámara en grande */}
+      <div className="flex-[3] overflow-y-auto p-4 min-h-0">
+        {!selected ? (
+          // ── Selector de cámaras ──
+          <>
+            <p className="font-display text-lg uppercase text-[#EDEFFE]/70 mb-1">// Seleccioná una cámara</p>
+            <p className="font-sans text-xs text-[#EDEFFE]/40 mb-4">Hacé click para verla en vivo y en grande</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {cameras.map((cam) => {
+                const meta = metaFor(cam.id);
+                const Icon = meta.icon;
+                const online = String(cam.state).toUpperCase() === 'CONNECTED';
+                return (
+                  <button
+                    key={cam.id}
+                    onClick={() => setSelectedCam(cam.id)}
+                    className={`group text-left border-2 ${meta.accent} bg-[#1F1F1F] p-4 flex flex-col gap-3 hover:bg-[#1e22aa]/20 transition-colors shadow-[4px_4px_0_#1F1F1F] hover:shadow-[6px_6px_0_#EDEFFE]`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <Icon className="w-8 h-8 text-[#EDEFFE]" />
+                      {meta.critical && <span className="text-[9px] font-bold uppercase border border-red-400 text-red-400 px-1">alarma</span>}
+                    </div>
+                    <span className="font-display text-lg uppercase leading-none text-[#EDEFFE]">{meta.label}</span>
+                    <div className="flex items-center justify-between text-[10px] font-mono text-[#EDEFFE]/50">
+                      <span className="flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full ${online ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+                        {online ? `${cam.fps?.toFixed?.(0) ?? cam.fps} fps` : 'offline'}
+                      </span>
+                      <span className="flex items-center gap-1 uppercase font-bold text-[#EDEFFE]/40 group-hover:text-[#EDEFFE]">
+                        <Maximize2 className="w-3 h-3" /> Ver
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          // ── Cámara en grande ──
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={() => setSelectedCam(null)}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase text-[#EDEFFE]/60 hover:text-[#EDEFFE] transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" /> Cámaras
+              </button>
+              <span className="flex items-center gap-2 font-display text-base uppercase tracking-widest text-[#EDEFFE]">
+                {React.createElement(metaFor(selected.id).icon, { className: 'w-4 h-4' })}
+                {metaFor(selected.id).label}
+                <span className={`w-2 h-2 rounded-full ${String(selected.state).toUpperCase() === 'CONNECTED' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+              </span>
+            </div>
+            <div className={`flex-1 border-2 ${metaFor(selected.id).accent} bg-black flex items-center justify-center min-h-0`}>
+              <img
+                src={`${API}/mjpeg/${selected.id}`}
+                alt={metaFor(selected.id).label}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Panel de alertas */}
